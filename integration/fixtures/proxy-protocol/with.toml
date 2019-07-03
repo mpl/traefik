@@ -9,7 +9,8 @@
   [entryPoints.web]
     address = ":8000"
     [entryPoints.web.proxyProtocol]
-      trustedIPs = ["{{.HaproxyIP}}"]
+#      trustedIPs = ["{{.HaproxyIP}}"]
+      trustedIPs = ["172.28.1.2"]
 
 [api]
 
@@ -28,4 +29,4 @@
     [http.services.service1.loadBalancer]
 
       [[http.services.service1.loadBalancer.servers]]
-        url = "http://{{.WhoamiIP}}"
+        url = "http://172.28.1.4"

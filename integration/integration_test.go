@@ -53,6 +53,7 @@ func init() {
 		check.Suite(&LogRotationSuite{})
 		check.Suite(&MarathonSuite{})
 		check.Suite(&MarathonSuite15{})
+		check.Suite(&ProxyProtocolSuite{})
 		check.Suite(&RateLimitSuite{})
 		check.Suite(&RestSuite{})
 		check.Suite(&RetrySuite{})
@@ -65,7 +66,6 @@ func init() {
 	if *host {
 		// tests launched from the host
 		check.Suite(&K8sSuite{})
-		check.Suite(&ProxyProtocolSuite{})
 		check.Suite(&TCPSuite{})
 	}
 }
@@ -94,6 +94,7 @@ func (s *BaseSuite) createComposeProject(c *check.C, name string) {
 		c.Assert(err, checker.IsNil)
 		if !ip.IsLoopback() && ip.To4() != nil {
 			os.Setenv("DOCKER_HOST_IP", ip.String())
+			println("DOCKER_HOST_IP: ", ip.String())
 			break
 		}
 	}

@@ -1,7 +1,37 @@
-haproxy:
-  image: haproxy
-  volumes:
-    - ../haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+version: "3"
 
-whoami:
-  image: containous/whoami
+services:
+  haproxy:
+    image: haproxy
+    volumes:
+      - ../haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    networks:
+      testing_net:
+        ipv4_address: 172.28.1.2
+  
+  
+  traefik:
+    image: traefik-dev:mactests
+    volumes:
+      - ../../fixtures/proxy-protocol/with.toml:/etc/traefik/traefik.toml
+    ports:
+      - "8000:8000"
+    networks:
+      testing_net:
+        ipv4_address: 172.28.1.3
+  
+  
+  whoami:
+    image: containous/whoami
+    networks:
+      testing_net:
+        ipv4_address: 172.28.1.4
+  
+  
+  networks:
+    testing_net:
+      ipam:
+        driver: default
+        config:
+          - subnet: 172.28.0.0/16
+            gateway: 172.28.1.1
