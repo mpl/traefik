@@ -1,6 +1,8 @@
 package v1alpha1
 
 import (
+	"errors"
+
 	"github.com/containous/traefik/v2/pkg/config/dynamic"
 	"github.com/containous/traefik/v2/pkg/types"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -45,8 +47,11 @@ type TLSOptionRef struct {
 	Namespace string `json:"namespace"`
 }
 
-// Service defines an upstream to proxy traffic.
-type Service struct {
+// LoadBalancerSpec can reference either a Kubernetes Service object (a load-balancer of servers),
+// or a NodeService object (a traefik load-balancer of services).
+type LoadBalancerSpec struct {
+	// Name is a reference to a Kubernetes Service object for a load-balancer of servers.
+	// It (and all the other related fields below), is mutually exclusive with ServiceName.
 	Name               string                      `json:"name"`
 	Port               int32                       `json:"port"`
 	Scheme             string                      `json:"scheme,omitempty"`
@@ -54,7 +59,47 @@ type Service struct {
 	Strategy           string                      `json:"strategy,omitempty"`
 	PassHostHeader     *bool                       `json:"passHostHeader,omitempty"`
 	ResponseForwarding *dynamic.ResponseForwarding `json:"responseForwarding,omitempty"`
-	Weight             *int                        `json:"weight,omitempty"`
+
+	// ServiceName is a reference to a NodeService object. It is mutually exclusive
+	// with Name and all the other fields above, which are related to the direct
+	// load-balancing of servers.
+	ServiceName string `json:"serviceName"`
+	Weight      *int   `json:"weight,omitempty"`
+
+	Namespace string          `json:"namespace"`
+	Sticky    *dynamic.Sticky `json:"sticky,omitempty"`
+}
+
+// IsServersLB reports whether lb is a load-balancer of servers (as opposed to a
+// traefik load-balancer of services).
+func (lb LoadBalancerSpec) IsServersLB() (bool, error) {
+	if lb.ServiceName == "" && lb.Name == "" {
+		return false, errors.New("service is neither a NodeService or a (Kubebernetes) Service")
+	}
+	if lb.ServiceName == "" {
+		return true, nil
+	}
+	if lb.Name != "" ||
+		lb.Port != 0 ||
+		lb.Scheme != "" ||
+		lb.HealthCheck != nil ||
+		lb.Strategy != "" ||
+		lb.PassHostHeader != nil ||
+		lb.ResponseForwarding != nil ||
+		lb.Sticky != nil {
+		return false, errors.New("traefikName is mutually exclusive with any other field")
+	}
+	return false, nil
+}
+
+// Service defines an upstream to proxy traffic.
+type Service struct {
+	LoadBalancerSpec
+}
+
+// LoadBalancer returns the embedded LoadBalancer
+func (m Service) LoadBalancer() LoadBalancerSpec {
+	return m.LoadBalancerSpec
 }
 
 // MiddlewareRef is a ref to the Middleware resources.

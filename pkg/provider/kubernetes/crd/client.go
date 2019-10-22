@@ -49,6 +49,8 @@ type Client interface {
 	GetIngressRoutes() []*v1alpha1.IngressRoute
 	GetIngressRouteTCPs() []*v1alpha1.IngressRouteTCP
 	GetMiddlewares() []*v1alpha1.Middleware
+	GetNodeService(namespace, name string) (*v1alpha1.NodeService, bool, error)
+	GetNodeServices() []*v1alpha1.NodeService
 	GetTLSOptions() []*v1alpha1.TLSOption
 
 	GetIngresses() []*extensionsv1beta1.Ingress
@@ -207,7 +209,7 @@ func (c *clientWrapper) GetIngressRoutes() []*v1alpha1.IngressRoute {
 	for ns, factory := range c.factoriesCrd {
 		ings, err := factory.Traefik().V1alpha1().IngressRoutes().Lister().List(c.labelSelector)
 		if err != nil {
-			log.Errorf("Failed to list ingresses in namespace %s: %s", ns, err)
+			log.Errorf("Failed to list ingress routes in namespace %s: %s", ns, err)
 		}
 		result = append(result, ings...)
 	}
@@ -221,7 +223,7 @@ func (c *clientWrapper) GetIngressRouteTCPs() []*v1alpha1.IngressRouteTCP {
 	for ns, factory := range c.factoriesCrd {
 		ings, err := factory.Traefik().V1alpha1().IngressRouteTCPs().Lister().List(c.labelSelector)
 		if err != nil {
-			log.Errorf("Failed to list tcp ingresses in namespace %s: %s", ns, err)
+			log.Errorf("Failed to list tcp ingress routes in namespace %s: %s", ns, err)
 		}
 		result = append(result, ings...)
 	}
@@ -238,6 +240,31 @@ func (c *clientWrapper) GetMiddlewares() []*v1alpha1.Middleware {
 			log.Errorf("Failed to list middlewares in namespace %s: %s", ns, err)
 		}
 		result = append(result, middlewares...)
+	}
+
+	return result
+}
+
+// GetNodeService returns the named service from the given namespace.
+func (c *clientWrapper) GetNodeService(namespace, name string) (*v1alpha1.NodeService, bool, error) {
+	if !c.isWatchedNamespace(namespace) {
+		return nil, false, fmt.Errorf("failed to get service %s/%s: namespace is not within watched namespaces", namespace, name)
+	}
+
+	service, err := c.factoriesCrd[c.lookupNamespace(namespace)].Traefik().V1alpha1().NodeServices().Lister().NodeServices(namespace).Get(name)
+	exist, err := translateNotFoundError(err)
+	return service, exist, err
+}
+
+func (c *clientWrapper) GetNodeServices() []*v1alpha1.NodeService {
+	var result []*v1alpha1.NodeService
+
+	for ns, factory := range c.factoriesCrd {
+		ings, err := factory.Traefik().V1alpha1().NodeServices().Lister().List(c.labelSelector)
+		if err != nil {
+			log.Errorf("Failed to list node services in namespace %s: %s", ns, err)
+		}
+		result = append(result, ings...)
 	}
 
 	return result

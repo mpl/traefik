@@ -1,0 +1,41 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: NodeService
+metadata:
+  name: wrr2
+  namespace: default
+
+spec:
+  weighted:
+    services:
+      - serviceName: wrr1
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: NodeService
+metadata:
+  name: wrr1
+  namespace: default
+
+spec:
+  weighted:
+    services:
+      - serviceName: wrr2
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: test.route
+  namespace: default
+
+spec:
+  entryPoints:
+    - web
+
+  routes:
+  - match: Host(`foo.com`) && PathPrefix(`/foo`)
+    kind: Rule
+    priority: 12
+    services:
+    - serviceName: wrr1

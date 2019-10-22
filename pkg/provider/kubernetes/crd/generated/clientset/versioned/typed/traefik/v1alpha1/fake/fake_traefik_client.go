@@ -48,6 +48,10 @@ func (c *FakeTraefikV1alpha1) Middlewares(namespace string) v1alpha1.MiddlewareI
 	return &FakeMiddlewares{c, namespace}
 }
 
+func (c *FakeTraefikV1alpha1) NodeServices(namespace string) v1alpha1.NodeServiceInterface {
+	return &FakeNodeServices{c, namespace}
+}
+
 func (c *FakeTraefikV1alpha1) TLSOptions(namespace string) v1alpha1.TLSOptionInterface {
 	return &FakeTLSOptions{c, namespace}
 }
