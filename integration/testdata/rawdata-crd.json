@@ -96,7 +96,7 @@
 		}
 	},
 	"tcpRouters": {
-		"default-test3-route-673acf455cb2dab0b43a@kubernetescrd": {
+		"default-test3.route-673acf455cb2dab0b43a@kubernetescrd": {
 			"entryPoints": [
 				"footcp"
 			],
