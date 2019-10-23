@@ -1,10 +1,10 @@
 {
 	"routers": {
-		"default-test.route-6b204d94623b3df4370c@kubernetescrd": {
+		"default-test-route-6b204d94623b3df4370c@kubernetescrd": {
 			"entryPoints": [
 				"web"
 			],
-			"service": "default-test.route-6b204d94623b3df4370c",
+			"service": "default-test-route-6b204d94623b3df4370c",
 			"rule": "Host(`foo.com`) \u0026\u0026 PathPrefix(`/bar`)",
 			"priority": 12,
 			"tls": {
@@ -15,14 +15,14 @@
 				"web"
 			]
 		},
-		"default-test2.route-23c7f4c450289ee29016@kubernetescrd": {
+		"default-test2-route-23c7f4c450289ee29016@kubernetescrd": {
 			"entryPoints": [
 				"web"
 			],
 			"middlewares": [
 				"default-mychain@kubernetescrd"
 			],
-			"service": "default-test2.route-23c7f4c450289ee29016",
+			"service": "default-test2-route-23c7f4c450289ee29016",
 			"rule": "Host(`foo.com`) \u0026\u0026 PathPrefix(`/tobestripped`)",
 			"status": "enabled",
 			"using": [
@@ -39,7 +39,7 @@
 			},
 			"status": "enabled",
 			"usedBy": [
-				"default-test2.route-23c7f4c450289ee29016@kubernetescrd"
+				"default-test2-route-23c7f4c450289ee29016@kubernetescrd"
 			]
 		},
 		"default-stripprefix@kubernetescrd": {
@@ -52,7 +52,7 @@
 		}
 	},
 	"services": {
-		"default-test.route-6b204d94623b3df4370c@kubernetescrd": {
+		"default-test-route-6b204d94623b3df4370c@kubernetescrd": {
 			"loadBalancer": {
 				"servers": [
 					{
@@ -66,14 +66,14 @@
 			},
 			"status": "enabled",
 			"usedBy": [
-				"default-test.route-6b204d94623b3df4370c@kubernetescrd"
+				"default-test-route-6b204d94623b3df4370c@kubernetescrd"
 			],
 			"serverStatus": {
 				"http://10.42.0.2:80": "UP",
 				"http://10.42.0.6:80": "UP"
 			}
 		},
-		"default-test2.route-23c7f4c450289ee29016@kubernetescrd": {
+		"default-test2-route-23c7f4c450289ee29016@kubernetescrd": {
 			"loadBalancer": {
 				"servers": [
 					{
@@ -87,7 +87,7 @@
 			},
 			"status": "enabled",
 			"usedBy": [
-				"default-test2.route-23c7f4c450289ee29016@kubernetescrd"
+				"default-test2-route-23c7f4c450289ee29016@kubernetescrd"
 			],
 			"serverStatus": {
 				"http://10.42.0.2:80": "UP",
@@ -96,7 +96,7 @@
 		}
 	},
 	"tcpRouters": {
-		"default-test3.route-673acf455cb2dab0b43a@kubernetescrd": {
+		"default-test3-route-673acf455cb2dab0b43a@kubernetescrd": {
 			"entryPoints": [
 				"footcp"
 			],
