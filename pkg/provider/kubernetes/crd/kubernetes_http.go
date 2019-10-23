@@ -201,6 +201,7 @@ func (c configBuilder) buildServicesLB(ctx context.Context, serviceName string, 
 			var err error
 			svc, err = c.buildService(ctx, namespace, service)
 			if err != nil {
+				println("TOPLEVEL: ", toplevel)
 				log.FromContext(ctx).
 					WithField(log.ServiceName, serviceName).
 					Errorf("failed to create child service of Weighted: %v", err)
@@ -268,6 +269,8 @@ func (c configBuilder) buildNodeService(ctx context.Context, namespace, name str
 		return err
 	}
 	if !exists {
+		services := c.client.GetNodeServices()
+		println("ALL THE SERVICES: ", fmt.Sprintf("%#v", services))
 		return fmt.Errorf("service not found: %s/%s", namespace, name)
 	}
 
