@@ -87,6 +87,7 @@ spec:
       - name: whoami4
         percent: 50
         port: 8080
+
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: NodeService
