@@ -29,6 +29,17 @@
 				"web"
 			]
 		}
+		"default-test3-route-673acf455cb2dab0b43a@kubernetescrd": {
+			"entryPoints": [
+				"web"
+			],
+			"service": "default-test3-route-673acf455cb2dab0b43a",
+			"rule": "Host(`foo.com`) \u0026\u0026 PathPrefix(`/wrr1`)",
+			"status": "enabled",
+			"using": [
+				"web"
+			]
+		}
 	},
 	"middlewares": {
 		"default-mychain@kubernetescrd": {
