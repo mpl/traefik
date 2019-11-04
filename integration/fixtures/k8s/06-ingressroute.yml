@@ -1,6 +1,6 @@
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: NodeService
+kind: TraefikService
 metadata:
   name: mirror1
   namespace: default
@@ -15,7 +15,7 @@ spec:
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: NodeService
+kind: TraefikService
 metadata:
   name: wrr1
   namespace: default
@@ -23,7 +23,8 @@ metadata:
 spec:
   weighted:
     services:
-      - serviceName: mirror1
+      - name: mirror1
+        kind: TraefikService
       - name: whoami
         port: 80
 
@@ -41,4 +42,5 @@ spec:
   - match: Host(`foo.com`) && PathPrefix(`/wrr1`)
     kind: Rule
     services:
-    - serviceName: wrr1
+    - name: wrr1
+      kind: TraefikService

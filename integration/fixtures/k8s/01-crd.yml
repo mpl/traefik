@@ -61,13 +61,13 @@ spec:
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
-  name: nodeservices.traefik.containo.us
+  name: traefikservices.traefik.containo.us
 
 spec:
   group: traefik.containo.us
   version: v1alpha1
   names:
-    kind: NodeService
-    plural: nodeservices
-    singular: nodeservice
+    kind: TraefikService
+    plural: traefikservices
+    singular: traefikservice
   scope: Namespaced
