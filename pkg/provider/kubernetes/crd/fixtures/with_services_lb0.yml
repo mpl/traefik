@@ -58,4 +58,6 @@ spec:
     kind: Rule
     priority: 12
     services:
-    - serviceName: wrr1
+    - name: wrr1
+      # TODO: quid de la casse?
+      kind: NodeService

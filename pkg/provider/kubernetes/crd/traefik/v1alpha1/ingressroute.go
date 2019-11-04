@@ -2,6 +2,7 @@ package v1alpha1
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/containous/traefik/v2/pkg/config/dynamic"
 	"github.com/containous/traefik/v2/pkg/types"
@@ -52,7 +53,11 @@ type TLSOptionRef struct {
 type LoadBalancerSpec struct {
 	// Name is a reference to a Kubernetes Service object for a load-balancer of servers.
 	// It (and all the other related fields below), is mutually exclusive with ServiceName.
-	Name               string                      `json:"name"`
+	Name      string          `json:"name"`
+	Kind      string          `json:"kind"`
+	Namespace string          `json:"namespace"`
+	Sticky    *dynamic.Sticky `json:"sticky,omitempty"`
+
 	Port               int32                       `json:"port"`
 	Scheme             string                      `json:"scheme,omitempty"`
 	HealthCheck        *HealthCheck                `json:"healthCheck,omitempty"`
@@ -63,31 +68,27 @@ type LoadBalancerSpec struct {
 	// ServiceName is a reference to a NodeService object. It is mutually exclusive
 	// with Name and all the other fields above, which are related to the direct
 	// load-balancing of servers.
-	ServiceName string `json:"serviceName"`
-	Weight      *int   `json:"weight,omitempty"`
-
-	Namespace string          `json:"namespace"`
-	Sticky    *dynamic.Sticky `json:"sticky,omitempty"`
+	//	ServiceName string `json:"serviceName"`
+	Weight *int `json:"weight,omitempty"`
 }
 
 // IsServersLB reports whether lb is a load-balancer of servers (as opposed to a
 // traefik load-balancer of services).
 func (lb LoadBalancerSpec) IsServersLB() (bool, error) {
-	if lb.ServiceName == "" && lb.Name == "" {
-		return false, errors.New("service is neither a NodeService or a (Kubebernetes) Service")
+	if lb.Name == "" {
+		return false, errors.New("missing Name field in service")
 	}
-	if lb.ServiceName == "" {
+	if lb.Kind == "" || lb.Kind == "Service" {
 		return true, nil
 	}
-	if lb.Name != "" ||
-		lb.Port != 0 ||
+	if lb.Port != 0 ||
 		lb.Scheme != "" ||
 		lb.HealthCheck != nil ||
 		lb.Strategy != "" ||
 		lb.PassHostHeader != nil ||
 		lb.ResponseForwarding != nil ||
 		lb.Sticky != nil {
-		return false, errors.New("traefikName is mutually exclusive with any other field")
+		return false, fmt.Errorf("service of kind %v is incompatible with Kubernetes Service related fields", lb.Kind)
 	}
 	return false, nil
 }

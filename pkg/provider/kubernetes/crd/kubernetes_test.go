@@ -2950,6 +2950,11 @@ func TestLoadIngressRoutes(t *testing.T) {
 		test := test
 
 		t.Run(test.desc, func(t *testing.T) {
+
+			if test.desc != "one kube service (== servers lb) in a services wrr" {
+				return
+			}
+
 			t.Parallel()
 
 			if test.expected == nil {

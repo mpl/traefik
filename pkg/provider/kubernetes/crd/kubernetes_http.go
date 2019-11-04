@@ -46,6 +46,7 @@ func (p *Provider) loadIngressRouteConfiguration(ctx context.Context, client Cli
 			ingressName = ingressRoute.GenerateName
 		}
 
+		// TODO: make it all work for crossprovider services
 		for _, route := range ingressRoute.Spec.Routes {
 			if route.Kind != "Rule" {
 				logger.Errorf("Unsupported match kind: %s. Only \"Rule\" is supported for now.", route.Kind)
@@ -184,7 +185,7 @@ func (c configBuilder) buildServicesLB(ctx context.Context, serviceName string, 
 		if service.Name != "" {
 			fullName = fullServiceName(namespace, service.Name, service.Port)
 		} else {
-			fullName = fullServiceName(namespace, service.ServiceName, 0)
+			fullName = fullServiceName(namespace, service.Name, 0)
 			tuple := serviceName + ":" + fullName
 			if _, exists := c.seen[tuple]; exists {
 				seen = true
@@ -259,7 +260,7 @@ func (c configBuilder) buildService(ctx context.Context, namespace string, svc v
 		return c.buildServersLB(ctx, namespace, svc)
 	}
 
-	return nil, c.buildNodeService(ctx, namespace, svc.ServiceName)
+	return nil, c.buildNodeService(ctx, namespace, svc.Name)
 }
 
 // buildNodeService creates the configuration for the traefik service referenced as name.
@@ -299,21 +300,21 @@ func (c configBuilder) buildMirror(ctx context.Context, fallbackNamespace string
 	}
 	namespace := namespaceOrFallback(lb, fallbackNamespace)
 	if !isServersLB {
-		fullName := fullServiceName(namespace, lb.ServiceName, 0)
+		fullName := fullServiceName(namespace, lb.Name, 0)
 		tuple := c.parent + ":" + fullName
 		if _, exists := c.seen[tuple]; exists {
 			log.FromContext(ctx).
-				WithField(log.ServiceName, lb.ServiceName).
+				WithField(log.ServiceName, lb.Name).
 				WithField("serviceNamespace", namespace).
 				Warnf("Infinite recursion detected: %v -> %v", c.parent, fullName)
 			return fullName, nil
 		}
 		c.seen[tuple] = struct{}{}
 
-		if err := c.buildNodeService(ctx, namespace, lb.ServiceName); err != nil {
+		if err := c.buildNodeService(ctx, namespace, lb.Name); err != nil {
 			return "", err
 		}
-		return fullServiceName(namespace, lb.ServiceName, 0), nil
+		return fullServiceName(namespace, lb.Name, 0), nil
 	}
 
 	fullName := fullServiceName(namespace, lb.Name, lb.Port)
