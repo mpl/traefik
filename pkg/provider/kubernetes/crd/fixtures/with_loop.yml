@@ -8,7 +8,8 @@ metadata:
 spec:
   weighted:
     services:
-      - serviceName: wrr1
+    - name: wrr1
+      kind: NodeService
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
@@ -20,7 +21,8 @@ metadata:
 spec:
   weighted:
     services:
-      - serviceName: wrr2
+    - name: wrr2
+      kind: NodeService
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
@@ -38,4 +40,5 @@ spec:
     kind: Rule
     priority: 12
     services:
-    - serviceName: wrr1
+    - name: wrr1
+      kind: NodeService

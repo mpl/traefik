@@ -87,10 +87,7 @@ func (p *Provider) loadIngressRouteConfiguration(ctx context.Context, client Cli
 			}
 			tsvc.Namespace = ingressRoute.Namespace
 
-			if err := r.buildServicesLB(ctxRt, serviceName, tsvc); err != nil {
-				logger.Errorf("failed to create service: %v", err)
-				continue
-			}
+			r.buildServicesLB(ctxRt, serviceName, tsvc)
 
 			var mds []string
 			for _, mi := range route.Middlewares {
@@ -172,7 +169,7 @@ func fullServiceName(namespace, serviceName string, port int32) string {
 
 // buildServicesLB creates the configuration for the load-balancer of services
 // named serviceName, and defined in tsvc.
-func (c configBuilder) buildServicesLB(ctx context.Context, serviceName string, tsvc *v1alpha1.NodeService) error {
+func (c configBuilder) buildServicesLB(ctx context.Context, serviceName string, tsvc *v1alpha1.NodeService) {
 	toplevel := c.toplevel
 	c.toplevel = false
 	services := tsvc.Spec.Weighted.Services
@@ -182,9 +179,10 @@ func (c configBuilder) buildServicesLB(ctx context.Context, serviceName string, 
 		seen := false
 		namespace := namespaceOrFallback(service.LoadBalancer(), tsvc.Namespace)
 		var fullName string
-		if service.Name != "" {
+		if service.Kind == "" || service.Kind == "Service" {
 			fullName = fullServiceName(namespace, service.Name, service.Port)
-		} else {
+			//		} else if service.Kind == "TraefikService" {
+		} else if service.Kind == "NodeService" {
 			fullName = fullServiceName(namespace, service.Name, 0)
 			tuple := serviceName + ":" + fullName
 			if _, exists := c.seen[tuple]; exists {
@@ -195,6 +193,12 @@ func (c configBuilder) buildServicesLB(ctx context.Context, serviceName string, 
 					Warnf("Infinite recursion detected: %v -> %v", serviceName, fullName)
 			}
 			c.seen[tuple] = struct{}{}
+		} else {
+			log.FromContext(ctx).
+				WithField(log.ServiceName, serviceName).
+				WithField("serviceNamespace", namespace).
+				Warnf("Unsupported service kind %v", service.Kind)
+			continue
 		}
 
 		var svc *dynamic.Service
@@ -216,7 +220,7 @@ func (c configBuilder) buildServicesLB(ctx context.Context, serviceName string, 
 			// In that case we don't wrap it in a services loadbalancer.
 			if toplevel && len(services) == 1 {
 				c.conf.Services[provider.Normalize(serviceName)] = svc
-				return nil
+				return
 			}
 			c.conf.Services[fullServiceName(namespace, service.Name, service.Port)] = svc
 		}
@@ -244,8 +248,6 @@ func (c configBuilder) buildServicesLB(ctx context.Context, serviceName string, 
 			Sticky:   tsvc.Spec.Weighted.Sticky,
 		},
 	}
-
-	return nil
 }
 
 // buildService creates the configuration for the service defined in svc.
@@ -270,14 +272,13 @@ func (c configBuilder) buildNodeService(ctx context.Context, namespace, name str
 		return err
 	}
 	if !exists {
-		services := c.client.GetNodeServices()
-		println("ALL THE SERVICES: ", fmt.Sprintf("%#v", services))
 		return fmt.Errorf("service not found: %s/%s", namespace, name)
 	}
 
 	stsvc := tsvc.Spec
 	if stsvc.Weighted != nil {
-		return c.buildServicesLB(ctx, name, tsvc)
+		c.buildServicesLB(ctx, name, tsvc)
+		return nil
 	} else if stsvc.Mirroring != nil {
 		return c.buildMirroring(ctx, name, tsvc)
 	}
