@@ -39,59 +39,59 @@ import (
 	cache "k8s.io/client-go/tools/cache"
 )
 
-// NodeServiceInformer provides access to a shared informer and lister for
-// NodeServices.
-type NodeServiceInformer interface {
+// TraefikServiceInformer provides access to a shared informer and lister for
+// TraefikServices.
+type TraefikServiceInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.NodeServiceLister
+	Lister() v1alpha1.TraefikServiceLister
 }
 
-type nodeServiceInformer struct {
+type traefikServiceInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
 	namespace        string
 }
 
-// NewNodeServiceInformer constructs a new informer for NodeService type.
+// NewTraefikServiceInformer constructs a new informer for TraefikService type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewNodeServiceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredNodeServiceInformer(client, namespace, resyncPeriod, indexers, nil)
+func NewTraefikServiceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredTraefikServiceInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredNodeServiceInformer constructs a new informer for NodeService type.
+// NewFilteredTraefikServiceInformer constructs a new informer for TraefikService type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredNodeServiceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredTraefikServiceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.TraefikV1alpha1().NodeServices(namespace).List(options)
+				return client.TraefikV1alpha1().TraefikServices(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.TraefikV1alpha1().NodeServices(namespace).Watch(options)
+				return client.TraefikV1alpha1().TraefikServices(namespace).Watch(options)
 			},
 		},
-		&traefikv1alpha1.NodeService{},
+		&traefikv1alpha1.TraefikService{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *nodeServiceInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredNodeServiceInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *traefikServiceInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredTraefikServiceInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *nodeServiceInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&traefikv1alpha1.NodeService{}, f.defaultInformer)
+func (f *traefikServiceInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&traefikv1alpha1.TraefikService{}, f.defaultInformer)
 }
 
-func (f *nodeServiceInformer) Lister() v1alpha1.NodeServiceLister {
-	return v1alpha1.NewNodeServiceLister(f.Informer().GetIndexer())
+func (f *traefikServiceInformer) Lister() v1alpha1.TraefikServiceLister {
+	return v1alpha1.NewTraefikServiceLister(f.Informer().GetIndexer())
 }

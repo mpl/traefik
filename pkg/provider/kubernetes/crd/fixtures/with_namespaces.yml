@@ -90,7 +90,7 @@ spec:
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: NodeService
+kind: TraefikService
 metadata:
   name: mirror1
   namespace: foo
@@ -107,12 +107,12 @@ spec:
         port: 8080
         namespace: baz
       - name: mirrored
-        kind: NodeService
+        kind: TraefikService
         namespace: bar
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: NodeService
+kind: TraefikService
 metadata:
   name: wrr2
   namespace: bar
@@ -127,7 +127,7 @@ spec:
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: NodeService
+kind: TraefikService
 metadata:
   name: mirror2
   namespace: foo
@@ -143,15 +143,15 @@ spec:
         port: 8080
         namespace: baz
       - name: mirrored
-        kind: NodeService
+        kind: TraefikService
         namespace: bar
       - name: wrr1
-        kind: NodeService
+        kind: TraefikService
         namespace: foo
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: NodeService
+kind: TraefikService
 metadata:
   name: mirror3
   namespace: foo
@@ -159,7 +159,7 @@ metadata:
 spec:
   mirroring:
     name: wrr1
-    kind: NodeService
+    kind: TraefikService
     namespace: foo
     mirrors:
       - name: whoami4
@@ -168,16 +168,16 @@ spec:
         port: 8080
         namespace: baz
       - name: mirrored
-        kind: NodeService
+        kind: TraefikService
         namespace: bar
       - name: wrr1
-        kind: NodeService
+        kind: TraefikService
         namespace: foo
 
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: NodeService
+kind: TraefikService
 metadata:
   name: mirror4
   namespace: foo
@@ -185,7 +185,7 @@ metadata:
 spec:
   mirroring:
     name: wrr1
-    kind: NodeService
+    kind: TraefikService
     mirrors:
       - name: whoami4
         port: 8080
@@ -193,15 +193,15 @@ spec:
         port: 8080
         namespace: baz
       - name: mirrored
-        kind: NodeService
+        kind: TraefikService
         namespace: bar
       - name: wrr1
-        kind: NodeService
+        kind: TraefikService
         namespace: foo
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: NodeService
+kind: TraefikService
 metadata:
   name: mirrored
   namespace: bar
@@ -219,7 +219,7 @@ spec:
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: NodeService
+kind: TraefikService
 metadata:
   name: wrr1
   namespace: foo
@@ -233,9 +233,9 @@ spec:
         port: 8080
         namespace: baz
       - name: mirror1
-        kind: NodeService
+        kind: TraefikService
       - name: wrr2
-        kind: NodeService
+        kind: TraefikService
         namespace: bar
 
 ---
@@ -258,14 +258,14 @@ spec:
         port: 8080
         namespace: baz
       - name: wrr1
-        kind: NodeService
+        kind: TraefikService
         namespace: foo
       - name: mirror2
-        kind: NodeService
+        kind: TraefikService
         namespace: foo
       - name: mirror3
-        kind: NodeService
+        kind: TraefikService
         namespace: foo
       - name: mirror4
-        kind: NodeService
+        kind: TraefikService
         namespace: foo

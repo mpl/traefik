@@ -60,7 +60,7 @@ spec:
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: NodeService
+kind: TraefikService
 metadata:
   name: wrr2
   namespace: default
@@ -74,7 +74,7 @@ spec:
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: NodeService
+kind: TraefikService
 metadata:
   name: wrr1
   namespace: default
@@ -88,7 +88,7 @@ spec:
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: NodeService
+kind: TraefikService
 metadata:
   name: mirror1
   namespace: default
@@ -96,10 +96,10 @@ metadata:
 spec:
   mirroring:
     name: wrr1
-    kind: NodeService
+    kind: TraefikService
     mirrors:
       - name: wrr2
-        kind: NodeService
+        kind: TraefikService
         percent: 30
 
 ---
@@ -119,4 +119,4 @@ spec:
     priority: 12
     services:
     - name: mirror1
-      kind: NodeService
+      kind: TraefikService

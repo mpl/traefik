@@ -49,7 +49,7 @@ type TLSOptionRef struct {
 }
 
 // LoadBalancerSpec can reference either a Kubernetes Service object (a load-balancer of servers),
-// or a NodeService object (a traefik load-balancer of services).
+// or a TraefikService object (a traefik load-balancer of services).
 type LoadBalancerSpec struct {
 	// Name is a reference to a Kubernetes Service object for a load-balancer of servers.
 	// It (and all the other related fields below), is mutually exclusive with ServiceName.
@@ -65,7 +65,7 @@ type LoadBalancerSpec struct {
 	PassHostHeader     *bool                       `json:"passHostHeader,omitempty"`
 	ResponseForwarding *dynamic.ResponseForwarding `json:"responseForwarding,omitempty"`
 
-	// ServiceName is a reference to a NodeService object. It is mutually exclusive
+	// ServiceName is a reference to a TraefikService object. It is mutually exclusive
 	// with Name and all the other fields above, which are related to the direct
 	// load-balancing of servers.
 	//	ServiceName string `json:"serviceName"`
@@ -81,8 +81,7 @@ func (lb LoadBalancerSpec) IsServersLB() (bool, error) {
 	if lb.Kind == "" || lb.Kind == "Service" {
 		return true, nil
 	}
-	//	if lb.Kind != "TraefikService" {
-	if lb.Kind != "NodeService" {
+	if lb.Kind != "TraefikService" {
 		return false, fmt.Errorf("invalid kind value: %v", lb.Kind)
 	}
 	if lb.Port != 0 ||

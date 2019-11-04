@@ -8,11 +8,11 @@ import (
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// NodeService is the specification for a service (that an IngressRoute refers
+// TraefikService is the specification for a service (that an IngressRoute refers
 // to) that is usually not a terminal service (i.e. not a pod of servers), as
 // opposed to a Kubernetes Service. That is to say, it usually refers to other
-// (children) services, which themselves can be NodeServices or Services.
-type NodeService struct {
+// (children) services, which themselves can be TraefikServices or Services.
+type TraefikService struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata"`
 
@@ -21,17 +21,17 @@ type NodeService struct {
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// NodeServiceList is a list of NodeService resources.
-type NodeServiceList struct {
+// TraefikServiceList is a list of TraefikService resources.
+type TraefikServiceList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata"`
 
-	Items []NodeService `json:"items"`
+	Items []TraefikService `json:"items"`
 }
 
 // +k8s:deepcopy-gen=true
 
-// ServiceSpec defines whether a NodeService is a load-balancer of services or a
+// ServiceSpec defines whether a TraefikService is a load-balancer of services or a
 // mirroring service.
 type ServiceSpec struct {
 	Weighted  *WeightedRoundRobin `json:"weighted,omitempty"`

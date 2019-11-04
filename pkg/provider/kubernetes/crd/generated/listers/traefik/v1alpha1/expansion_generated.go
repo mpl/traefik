@@ -50,14 +50,6 @@ type MiddlewareListerExpansion interface{}
 // MiddlewareNamespaceLister.
 type MiddlewareNamespaceListerExpansion interface{}
 
-// NodeServiceListerExpansion allows custom methods to be added to
-// NodeServiceLister.
-type NodeServiceListerExpansion interface{}
-
-// NodeServiceNamespaceListerExpansion allows custom methods to be added to
-// NodeServiceNamespaceLister.
-type NodeServiceNamespaceListerExpansion interface{}
-
 // TLSOptionListerExpansion allows custom methods to be added to
 // TLSOptionLister.
 type TLSOptionListerExpansion interface{}
@@ -65,3 +57,11 @@ type TLSOptionListerExpansion interface{}
 // TLSOptionNamespaceListerExpansion allows custom methods to be added to
 // TLSOptionNamespaceLister.
 type TLSOptionNamespaceListerExpansion interface{}
+
+// TraefikServiceListerExpansion allows custom methods to be added to
+// TraefikServiceLister.
+type TraefikServiceListerExpansion interface{}
+
+// TraefikServiceNamespaceListerExpansion allows custom methods to be added to
+// TraefikServiceNamespaceLister.
+type TraefikServiceNamespaceListerExpansion interface{}

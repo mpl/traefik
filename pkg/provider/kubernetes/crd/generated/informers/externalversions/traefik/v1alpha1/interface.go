@@ -38,10 +38,10 @@ type Interface interface {
 	IngressRouteTCPs() IngressRouteTCPInformer
 	// Middlewares returns a MiddlewareInformer.
 	Middlewares() MiddlewareInformer
-	// NodeServices returns a NodeServiceInformer.
-	NodeServices() NodeServiceInformer
 	// TLSOptions returns a TLSOptionInformer.
 	TLSOptions() TLSOptionInformer
+	// TraefikServices returns a TraefikServiceInformer.
+	TraefikServices() TraefikServiceInformer
 }
 
 type version struct {
@@ -70,12 +70,12 @@ func (v *version) Middlewares() MiddlewareInformer {
 	return &middlewareInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// NodeServices returns a NodeServiceInformer.
-func (v *version) NodeServices() NodeServiceInformer {
-	return &nodeServiceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
 // TLSOptions returns a TLSOptionInformer.
 func (v *version) TLSOptions() TLSOptionInformer {
 	return &tLSOptionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// TraefikServices returns a TraefikServiceInformer.
+func (v *version) TraefikServices() TraefikServiceInformer {
+	return &traefikServiceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }

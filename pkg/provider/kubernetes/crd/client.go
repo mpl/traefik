@@ -49,8 +49,8 @@ type Client interface {
 	GetIngressRoutes() []*v1alpha1.IngressRoute
 	GetIngressRouteTCPs() []*v1alpha1.IngressRouteTCP
 	GetMiddlewares() []*v1alpha1.Middleware
-	GetNodeService(namespace, name string) (*v1alpha1.NodeService, bool, error)
-	GetNodeServices() []*v1alpha1.NodeService
+	GetTraefikService(namespace, name string) (*v1alpha1.TraefikService, bool, error)
+	GetTraefikServices() []*v1alpha1.TraefikService
 	GetTLSOptions() []*v1alpha1.TLSOption
 
 	GetIngresses() []*extensionsv1beta1.Ingress
@@ -245,24 +245,24 @@ func (c *clientWrapper) GetMiddlewares() []*v1alpha1.Middleware {
 	return result
 }
 
-// GetNodeService returns the named service from the given namespace.
-func (c *clientWrapper) GetNodeService(namespace, name string) (*v1alpha1.NodeService, bool, error) {
+// GetTraefikService returns the named service from the given namespace.
+func (c *clientWrapper) GetTraefikService(namespace, name string) (*v1alpha1.TraefikService, bool, error) {
 	if !c.isWatchedNamespace(namespace) {
 		return nil, false, fmt.Errorf("failed to get service %s/%s: namespace is not within watched namespaces", namespace, name)
 	}
 
-	service, err := c.factoriesCrd[c.lookupNamespace(namespace)].Traefik().V1alpha1().NodeServices().Lister().NodeServices(namespace).Get(name)
+	service, err := c.factoriesCrd[c.lookupNamespace(namespace)].Traefik().V1alpha1().TraefikServices().Lister().TraefikServices(namespace).Get(name)
 	exist, err := translateNotFoundError(err)
 	return service, exist, err
 }
 
-func (c *clientWrapper) GetNodeServices() []*v1alpha1.NodeService {
-	var result []*v1alpha1.NodeService
+func (c *clientWrapper) GetTraefikServices() []*v1alpha1.TraefikService {
+	var result []*v1alpha1.TraefikService
 
 	for ns, factory := range c.factoriesCrd {
-		ings, err := factory.Traefik().V1alpha1().NodeServices().Lister().List(c.labelSelector)
+		ings, err := factory.Traefik().V1alpha1().TraefikServices().Lister().List(c.labelSelector)
 		if err != nil {
-			log.Errorf("Failed to list node services in namespace %s: %s", ns, err)
+			log.Errorf("Failed to list Traefik services in namespace %s: %s", ns, err)
 		}
 		result = append(result, ings...)
 	}

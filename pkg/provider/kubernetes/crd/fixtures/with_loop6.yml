@@ -30,7 +30,7 @@ spec:
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: NodeService
+kind: TraefikService
 metadata:
   name: mirror2
   namespace: foo
@@ -42,11 +42,11 @@ spec:
     namespace: baz
     mirrors:
       - name: mirror1
-        kind: NodeService
+        kind: TraefikService
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: NodeService
+kind: TraefikService
 metadata:
   name: wrr1
   namespace: default
@@ -55,12 +55,12 @@ spec:
   weighted:
     services:
       - name: mirror2
-        kind: NodeService
+        kind: TraefikService
         namespace: foo
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: NodeService
+kind: TraefikService
 metadata:
   name: mirror1
   namespace: foo
@@ -72,7 +72,7 @@ spec:
     namespace: baz
     mirrors:
       - name: wrr1
-        kind: NodeService
+        kind: TraefikService
         namespace: default
 
 ---
@@ -92,5 +92,5 @@ spec:
     priority: 12
     services:
     - name: mirror1
-      kind: NodeService
+      kind: TraefikService
       namespace: foo

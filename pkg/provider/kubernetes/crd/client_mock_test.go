@@ -38,7 +38,7 @@ type clientMock struct {
 	ingressRouteTCPs []*v1alpha1.IngressRouteTCP
 	middlewares      []*v1alpha1.Middleware
 	tlsOptions       []*v1alpha1.TLSOption
-	nodeServices     []*v1alpha1.NodeService
+	traefikServices  []*v1alpha1.TraefikService
 
 	watchChan chan interface{}
 }
@@ -65,8 +65,8 @@ func newClientMock(paths ...string) clientMock {
 				c.ingressRouteTCPs = append(c.ingressRouteTCPs, o)
 			case *v1alpha1.Middleware:
 				c.middlewares = append(c.middlewares, o)
-			case *v1alpha1.NodeService:
-				c.nodeServices = append(c.nodeServices, o)
+			case *v1alpha1.TraefikService:
+				c.traefikServices = append(c.traefikServices, o)
 			case *v1alpha1.TLSOption:
 				c.tlsOptions = append(c.tlsOptions, o)
 			case *v1beta12.Ingress:
@@ -94,8 +94,8 @@ func (c clientMock) GetMiddlewares() []*v1alpha1.Middleware {
 	return c.middlewares
 }
 
-func (c clientMock) GetNodeService(namespace, name string) (*v1alpha1.NodeService, bool, error) {
-	for _, svc := range c.nodeServices {
+func (c clientMock) GetTraefikService(namespace, name string) (*v1alpha1.TraefikService, bool, error) {
+	for _, svc := range c.traefikServices {
 		if svc.Namespace == namespace && svc.Name == name {
 			return svc, true, nil
 		}
@@ -104,8 +104,8 @@ func (c clientMock) GetNodeService(namespace, name string) (*v1alpha1.NodeServic
 	return nil, false, nil
 }
 
-func (c clientMock) GetNodeServices() []*v1alpha1.NodeService {
-	return c.nodeServices
+func (c clientMock) GetTraefikServices() []*v1alpha1.TraefikService {
+	return c.traefikServices
 }
 
 func (c clientMock) GetTLSOptions() []*v1alpha1.TLSOption {

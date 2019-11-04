@@ -15,7 +15,7 @@ subsets:
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: NodeService
+kind: TraefikService
 metadata:
   name: wrr2
   namespace: default
@@ -44,7 +44,7 @@ spec:
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: NodeService
+kind: TraefikService
 metadata:
   name: wrr1
   namespace: default
@@ -53,7 +53,7 @@ spec:
   weighted:
     services:
     - name: wrr2
-      kind: NodeService
+      kind: TraefikService
       weight: 1
     - name: whoami5
       weight: 1
@@ -76,4 +76,4 @@ spec:
     priority: 12
     services:
     - name: wrr1
-      kind: NodeService
+      kind: TraefikService

@@ -60,7 +60,7 @@ spec:
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: NodeService
+kind: TraefikService
 metadata:
   name: mirror1
   namespace: default
@@ -91,4 +91,4 @@ spec:
     priority: 12
     services:
     - name: mirror1
-      kind: NodeService
+      kind: TraefikService

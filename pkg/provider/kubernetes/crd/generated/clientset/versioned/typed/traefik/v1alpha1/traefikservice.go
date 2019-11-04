@@ -37,45 +37,45 @@ import (
 	rest "k8s.io/client-go/rest"
 )
 
-// NodeServicesGetter has a method to return a NodeServiceInterface.
+// TraefikServicesGetter has a method to return a TraefikServiceInterface.
 // A group's client should implement this interface.
-type NodeServicesGetter interface {
-	NodeServices(namespace string) NodeServiceInterface
+type TraefikServicesGetter interface {
+	TraefikServices(namespace string) TraefikServiceInterface
 }
 
-// NodeServiceInterface has methods to work with NodeService resources.
-type NodeServiceInterface interface {
-	Create(*v1alpha1.NodeService) (*v1alpha1.NodeService, error)
-	Update(*v1alpha1.NodeService) (*v1alpha1.NodeService, error)
+// TraefikServiceInterface has methods to work with TraefikService resources.
+type TraefikServiceInterface interface {
+	Create(*v1alpha1.TraefikService) (*v1alpha1.TraefikService, error)
+	Update(*v1alpha1.TraefikService) (*v1alpha1.TraefikService, error)
 	Delete(name string, options *v1.DeleteOptions) error
 	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.NodeService, error)
-	List(opts v1.ListOptions) (*v1alpha1.NodeServiceList, error)
+	Get(name string, options v1.GetOptions) (*v1alpha1.TraefikService, error)
+	List(opts v1.ListOptions) (*v1alpha1.TraefikServiceList, error)
 	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NodeService, err error)
-	NodeServiceExpansion
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.TraefikService, err error)
+	TraefikServiceExpansion
 }
 
-// nodeServices implements NodeServiceInterface
-type nodeServices struct {
+// traefikServices implements TraefikServiceInterface
+type traefikServices struct {
 	client rest.Interface
 	ns     string
 }
 
-// newNodeServices returns a NodeServices
-func newNodeServices(c *TraefikV1alpha1Client, namespace string) *nodeServices {
-	return &nodeServices{
+// newTraefikServices returns a TraefikServices
+func newTraefikServices(c *TraefikV1alpha1Client, namespace string) *traefikServices {
+	return &traefikServices{
 		client: c.RESTClient(),
 		ns:     namespace,
 	}
 }
 
-// Get takes name of the nodeService, and returns the corresponding nodeService object, and an error if there is any.
-func (c *nodeServices) Get(name string, options v1.GetOptions) (result *v1alpha1.NodeService, err error) {
-	result = &v1alpha1.NodeService{}
+// Get takes name of the traefikService, and returns the corresponding traefikService object, and an error if there is any.
+func (c *traefikServices) Get(name string, options v1.GetOptions) (result *v1alpha1.TraefikService, err error) {
+	result = &v1alpha1.TraefikService{}
 	err = c.client.Get().
 		Namespace(c.ns).
-		Resource("nodeservices").
+		Resource("traefikservices").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
 		Do().
@@ -83,16 +83,16 @@ func (c *nodeServices) Get(name string, options v1.GetOptions) (result *v1alpha1
 	return
 }
 
-// List takes label and field selectors, and returns the list of NodeServices that match those selectors.
-func (c *nodeServices) List(opts v1.ListOptions) (result *v1alpha1.NodeServiceList, err error) {
+// List takes label and field selectors, and returns the list of TraefikServices that match those selectors.
+func (c *traefikServices) List(opts v1.ListOptions) (result *v1alpha1.TraefikServiceList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
 	}
-	result = &v1alpha1.NodeServiceList{}
+	result = &v1alpha1.TraefikServiceList{}
 	err = c.client.Get().
 		Namespace(c.ns).
-		Resource("nodeservices").
+		Resource("traefikservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Do().
@@ -100,8 +100,8 @@ func (c *nodeServices) List(opts v1.ListOptions) (result *v1alpha1.NodeServiceLi
 	return
 }
 
-// Watch returns a watch.Interface that watches the requested nodeServices.
-func (c *nodeServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
+// Watch returns a watch.Interface that watches the requested traefikServices.
+func (c *traefikServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
@@ -109,42 +109,42 @@ func (c *nodeServices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	opts.Watch = true
 	return c.client.Get().
 		Namespace(c.ns).
-		Resource("nodeservices").
+		Resource("traefikservices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
 		Watch()
 }
 
-// Create takes the representation of a nodeService and creates it.  Returns the server's representation of the nodeService, and an error, if there is any.
-func (c *nodeServices) Create(nodeService *v1alpha1.NodeService) (result *v1alpha1.NodeService, err error) {
-	result = &v1alpha1.NodeService{}
+// Create takes the representation of a traefikService and creates it.  Returns the server's representation of the traefikService, and an error, if there is any.
+func (c *traefikServices) Create(traefikService *v1alpha1.TraefikService) (result *v1alpha1.TraefikService, err error) {
+	result = &v1alpha1.TraefikService{}
 	err = c.client.Post().
 		Namespace(c.ns).
-		Resource("nodeservices").
-		Body(nodeService).
+		Resource("traefikservices").
+		Body(traefikService).
 		Do().
 		Into(result)
 	return
 }
 
-// Update takes the representation of a nodeService and updates it. Returns the server's representation of the nodeService, and an error, if there is any.
-func (c *nodeServices) Update(nodeService *v1alpha1.NodeService) (result *v1alpha1.NodeService, err error) {
-	result = &v1alpha1.NodeService{}
+// Update takes the representation of a traefikService and updates it. Returns the server's representation of the traefikService, and an error, if there is any.
+func (c *traefikServices) Update(traefikService *v1alpha1.TraefikService) (result *v1alpha1.TraefikService, err error) {
+	result = &v1alpha1.TraefikService{}
 	err = c.client.Put().
 		Namespace(c.ns).
-		Resource("nodeservices").
-		Name(nodeService.Name).
-		Body(nodeService).
+		Resource("traefikservices").
+		Name(traefikService.Name).
+		Body(traefikService).
 		Do().
 		Into(result)
 	return
 }
 
-// Delete takes name of the nodeService and deletes it. Returns an error if one occurs.
-func (c *nodeServices) Delete(name string, options *v1.DeleteOptions) error {
+// Delete takes name of the traefikService and deletes it. Returns an error if one occurs.
+func (c *traefikServices) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
 		Namespace(c.ns).
-		Resource("nodeservices").
+		Resource("traefikservices").
 		Name(name).
 		Body(options).
 		Do().
@@ -152,14 +152,14 @@ func (c *nodeServices) Delete(name string, options *v1.DeleteOptions) error {
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *nodeServices) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *traefikServices) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	var timeout time.Duration
 	if listOptions.TimeoutSeconds != nil {
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
 		Namespace(c.ns).
-		Resource("nodeservices").
+		Resource("traefikservices").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
 		Body(options).
@@ -167,12 +167,12 @@ func (c *nodeServices) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		Error()
 }
 
-// Patch applies the patch and returns the patched nodeService.
-func (c *nodeServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NodeService, err error) {
-	result = &v1alpha1.NodeService{}
+// Patch applies the patch and returns the patched traefikService.
+func (c *traefikServices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.TraefikService, err error) {
+	result = &v1alpha1.TraefikService{}
 	err = c.client.Patch(pt).
 		Namespace(c.ns).
-		Resource("nodeservices").
+		Resource("traefikservices").
 		SubResource(subresources...).
 		Name(name).
 		Body(data).

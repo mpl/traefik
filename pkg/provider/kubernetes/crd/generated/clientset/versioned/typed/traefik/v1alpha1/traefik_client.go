@@ -37,8 +37,8 @@ type TraefikV1alpha1Interface interface {
 	IngressRoutesGetter
 	IngressRouteTCPsGetter
 	MiddlewaresGetter
-	NodeServicesGetter
 	TLSOptionsGetter
+	TraefikServicesGetter
 }
 
 // TraefikV1alpha1Client is used to interact with features provided by the traefik.containo.us group.
@@ -58,12 +58,12 @@ func (c *TraefikV1alpha1Client) Middlewares(namespace string) MiddlewareInterfac
 	return newMiddlewares(c, namespace)
 }
 
-func (c *TraefikV1alpha1Client) NodeServices(namespace string) NodeServiceInterface {
-	return newNodeServices(c, namespace)
-}
-
 func (c *TraefikV1alpha1Client) TLSOptions(namespace string) TLSOptionInterface {
 	return newTLSOptions(c, namespace)
+}
+
+func (c *TraefikV1alpha1Client) TraefikServices(namespace string) TraefikServiceInterface {
+	return newTraefikServices(c, namespace)
 }
 
 // NewForConfig creates a new TraefikV1alpha1Client for the given config.

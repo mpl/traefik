@@ -78,7 +78,7 @@ func (p *Provider) loadIngressRouteConfiguration(ctx context.Context, client Cli
 				seen:     make(map[string]struct{}),
 			}
 
-			tsvc := &v1alpha1.NodeService{
+			tsvc := &v1alpha1.TraefikService{
 				Spec: v1alpha1.ServiceSpec{
 					Weighted: &v1alpha1.WeightedRoundRobin{
 						Services: route.Services,
@@ -169,7 +169,7 @@ func fullServiceName(namespace, serviceName string, port int32) string {
 
 // buildServicesLB creates the configuration for the load-balancer of services
 // named serviceName, and defined in tsvc.
-func (c configBuilder) buildServicesLB(ctx context.Context, serviceName string, tsvc *v1alpha1.NodeService) {
+func (c configBuilder) buildServicesLB(ctx context.Context, serviceName string, tsvc *v1alpha1.TraefikService) {
 	toplevel := c.toplevel
 	c.toplevel = false
 	services := tsvc.Spec.Weighted.Services
@@ -181,8 +181,7 @@ func (c configBuilder) buildServicesLB(ctx context.Context, serviceName string, 
 		var fullName string
 		if service.Kind == "" || service.Kind == "Service" {
 			fullName = fullServiceName(namespace, service.Name, service.Port)
-			//		} else if service.Kind == "TraefikService" {
-		} else if service.Kind == "NodeService" {
+		} else if service.Kind == "TraefikService" {
 			fullName = fullServiceName(namespace, service.Name, 0)
 			tuple := serviceName + ":" + fullName
 			if _, exists := c.seen[tuple]; exists {
@@ -262,12 +261,12 @@ func (c configBuilder) buildService(ctx context.Context, namespace string, svc v
 		return c.buildServersLB(ctx, namespace, svc)
 	}
 
-	return nil, c.buildNodeService(ctx, namespace, svc.Name)
+	return nil, c.buildTraefikService(ctx, namespace, svc.Name)
 }
 
-// buildNodeService creates the configuration for the traefik service referenced as name.
-func (c configBuilder) buildNodeService(ctx context.Context, namespace, name string) error {
-	tsvc, exists, err := c.client.GetNodeService(namespace, name)
+// buildTraefikService creates the configuration for the traefik service referenced as name.
+func (c configBuilder) buildTraefikService(ctx context.Context, namespace, name string) error {
+	tsvc, exists, err := c.client.GetTraefikService(namespace, name)
 	if err != nil {
 		return err
 	}
@@ -312,7 +311,7 @@ func (c configBuilder) buildMirror(ctx context.Context, fallbackNamespace string
 		}
 		c.seen[tuple] = struct{}{}
 
-		if err := c.buildNodeService(ctx, namespace, lb.Name); err != nil {
+		if err := c.buildTraefikService(ctx, namespace, lb.Name); err != nil {
 			return "", err
 		}
 		return fullServiceName(namespace, lb.Name, 0), nil
@@ -330,7 +329,7 @@ func (c configBuilder) buildMirror(ctx context.Context, fallbackNamespace string
 
 // buildMirroring creates the configuration for the mirroring service named serviceName,
 // and defined by tsvc.
-func (c configBuilder) buildMirroring(ctx context.Context, serviceName string, tsvc *v1alpha1.NodeService) error {
+func (c configBuilder) buildMirroring(ctx context.Context, serviceName string, tsvc *v1alpha1.TraefikService) error {
 	mirroring := tsvc.Spec.Mirroring
 	namespace := tsvc.Namespace
 
@@ -340,7 +339,7 @@ func (c configBuilder) buildMirroring(ctx context.Context, serviceName string, t
 	c.parent = fullName
 	main, err := c.buildMirror(ctx, namespace, mirroring)
 	if err != nil {
-		return fmt.Errorf("in mirroring NodeService: %v", err)
+		return fmt.Errorf("in mirroring TraefikService: %v", err)
 	}
 
 	// Then with the "children" mirrors

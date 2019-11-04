@@ -41,8 +41,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&MiddlewareList{},
 		&TLSOption{},
 		&TLSOptionList{},
-		&NodeService{},
-		&NodeServiceList{},
+		&TraefikService{},
+		&TraefikServiceList{},
 	)
 	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
 	return nil
