@@ -90,4 +90,5 @@ spec:
     kind: Rule
     priority: 12
     services:
-    - serviceName: mirror1
+    - name: mirror1
+      kind: NodeService

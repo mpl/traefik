@@ -38,7 +38,8 @@ metadata:
 spec:
   weighted:
     services:
-      - serviceName: wrr1
+      - name: wrr1
+        kind: NodeService
       - name: whoami6
         port: 8080
         namespace: baz
@@ -53,7 +54,8 @@ metadata:
 spec:
   weighted:
     services:
-      - serviceName: wrr2
+      - name: wrr2
+        kind: NodeService
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
@@ -71,4 +73,5 @@ spec:
     kind: Rule
     priority: 12
     services:
-    - serviceName: wrr1
+    - name: wrr1
+      kind: NodeService

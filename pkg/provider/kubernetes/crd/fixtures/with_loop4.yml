@@ -37,7 +37,8 @@ metadata:
 
 spec:
   mirroring:
-    serviceName: mirror1
+    name: mirror1
+    kind: NodeService
     mirrors:
       - name: whoami6
         port: 8080
@@ -52,7 +53,8 @@ metadata:
 
 spec:
   mirroring:
-    serviceName: mirror2
+    name: mirror2
+    kind: NodeService
     mirrors:
       - name: whoami6
         port: 8080
@@ -74,5 +76,6 @@ spec:
     kind: Rule
     priority: 12
     services:
-    - serviceName: mirror1
+    - name: mirror1
+      kind: NodeService
       namespace: foo

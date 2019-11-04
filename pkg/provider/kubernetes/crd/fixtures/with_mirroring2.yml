@@ -95,9 +95,11 @@ metadata:
 
 spec:
   mirroring:
-    serviceName: wrr1
+    name: wrr1
+    kind: NodeService
     mirrors:
-      - serviceName: wrr2
+      - name: wrr2
+        kind: NodeService
         percent: 30
 
 ---
@@ -116,4 +118,5 @@ spec:
     kind: Rule
     priority: 12
     services:
-    - serviceName: mirror1
+    - name: mirror1
+      kind: NodeService

@@ -38,7 +38,8 @@ metadata:
 spec:
   weighted:
     services:
-      - serviceName: mirror1
+      - name: mirror1
+        kind: NodeService
         namespace: foo
 
 ---
@@ -54,7 +55,8 @@ spec:
     port: 8080
     namespace: baz
     mirrors:
-      - serviceName: wrr1
+      - name: wrr1
+        kind: NodeService
         namespace: default
 
 ---
@@ -73,5 +75,6 @@ spec:
     kind: Rule
     priority: 12
     services:
-    - serviceName: mirror1
+    - name: mirror1
+      kind: NodeService
       namespace: foo

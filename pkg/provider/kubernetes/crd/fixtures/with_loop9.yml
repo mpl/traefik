@@ -55,7 +55,8 @@ spec:
     port: 8080
     namespace: baz
     mirrors:
-      - serviceName: wrr1
+      - name: wrr1
+        kind: NodeService
         namespace: default
 
 ---
@@ -68,7 +69,8 @@ metadata:
 spec:
   weighted:
     services:
-      - serviceName: mirror1
+      - name: mirror1
+        kind: NodeService
         namespace: foo
 
 ---
@@ -81,9 +83,11 @@ metadata:
 spec:
   weighted:
     services:
-      - serviceName: mirror1
+      - name: mirror1
+        kind: NodeService
         namespace: foo
-      - serviceName: wrr2
+      - name: wrr2
+        kind: NodeService
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
@@ -101,5 +105,7 @@ spec:
     kind: Rule
     priority: 12
     services:
-    - serviceName: wrr1
-    - serviceName: wrr3
+    - name: wrr1
+      kind: NodeService
+    - name: wrr3
+      kind: NodeService
