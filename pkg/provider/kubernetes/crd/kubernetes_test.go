@@ -2951,7 +2951,8 @@ func TestLoadIngressRoutes(t *testing.T) {
 
 		t.Run(test.desc, func(t *testing.T) {
 
-			if test.desc != "one kube service (== servers lb) in a services wrr" {
+			// POUET
+			if test.desc != "services lb, servers lb, and mirror service, all in a wrr with different namespaces" {
 				return
 			}
 

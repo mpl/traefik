@@ -81,6 +81,10 @@ func (lb LoadBalancerSpec) IsServersLB() (bool, error) {
 	if lb.Kind == "" || lb.Kind == "Service" {
 		return true, nil
 	}
+	//	if lb.Kind != "TraefikService" {
+	if lb.Kind != "NodeService" {
+		return false, fmt.Errorf("invalid kind value: %v", lb.Kind)
+	}
 	if lb.Port != 0 ||
 		lb.Scheme != "" ||
 		lb.HealthCheck != nil ||

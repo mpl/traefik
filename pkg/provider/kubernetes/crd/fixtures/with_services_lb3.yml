@@ -98,13 +98,15 @@ metadata:
 spec:
   weighted:
     services:
-      - serviceName: wrr2
-        weight: 1
-      - name: whoami5
-        weight: 1
-        port: 8080
-      - serviceName: mirror1
-        weight: 1
+    - name: wrr2
+      kind: NodeService
+      weight: 1
+    - name: whoami5
+      weight: 1
+      port: 8080
+    - name: mirror1
+      kind: NodeService
+      weight: 1
 
 ---
 apiVersion: traefik.containo.us/v1alpha1
@@ -122,4 +124,5 @@ spec:
     kind: Rule
     priority: 12
     services:
-    - serviceName: wrr1
+    - name: wrr1
+      kind: NodeService

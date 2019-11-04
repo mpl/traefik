@@ -106,7 +106,8 @@ spec:
       - name: whoami6
         port: 8080
         namespace: baz
-      - serviceName: mirrored
+      - name: mirrored
+        kind: NodeService
         namespace: bar
 
 ---
@@ -141,9 +142,11 @@ spec:
       - name: whoami6
         port: 8080
         namespace: baz
-      - serviceName: mirrored
+      - name: mirrored
+        kind: NodeService
         namespace: bar
-      - serviceName: wrr1
+      - name: wrr1
+        kind: NodeService
         namespace: foo
 
 ---
@@ -155,7 +158,8 @@ metadata:
 
 spec:
   mirroring:
-    serviceName: wrr1
+    name: wrr1
+    kind: NodeService
     namespace: foo
     mirrors:
       - name: whoami4
@@ -163,9 +167,11 @@ spec:
       - name: whoami6
         port: 8080
         namespace: baz
-      - serviceName: mirrored
+      - name: mirrored
+        kind: NodeService
         namespace: bar
-      - serviceName: wrr1
+      - name: wrr1
+        kind: NodeService
         namespace: foo
 
 
@@ -178,16 +184,19 @@ metadata:
 
 spec:
   mirroring:
-    serviceName: wrr1
+    name: wrr1
+    kind: NodeService
     mirrors:
       - name: whoami4
         port: 8080
       - name: whoami6
         port: 8080
         namespace: baz
-      - serviceName: mirrored
+      - name: mirrored
+        kind: NodeService
         namespace: bar
-      - serviceName: wrr1
+      - name: wrr1
+        kind: NodeService
         namespace: foo
 
 ---
@@ -223,8 +232,10 @@ spec:
       - name: whoami6
         port: 8080
         namespace: baz
-      - serviceName: mirror1
-      - serviceName: wrr2
+      - name: mirror1
+        kind: NodeService
+      - name: wrr2
+        kind: NodeService
         namespace: bar
 
 ---
@@ -243,14 +254,18 @@ spec:
       kind: Rule
       priority: 12
       services:
-        - name: whoami6
-          port: 8080
-          namespace: baz
-        - serviceName: wrr1
-          namespace: foo
-        - serviceName: mirror2
-          namespace: foo
-        - serviceName: mirror3
-          namespace: foo
-        - serviceName: mirror4
-          namespace: foo
+      - name: whoami6
+        port: 8080
+        namespace: baz
+      - name: wrr1
+        kind: NodeService
+        namespace: foo
+      - name: mirror2
+        kind: NodeService
+        namespace: foo
+      - name: mirror3
+        kind: NodeService
+        namespace: foo
+      - name: mirror4
+        kind: NodeService
+        namespace: foo

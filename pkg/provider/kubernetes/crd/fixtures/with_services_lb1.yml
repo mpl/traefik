@@ -168,5 +168,7 @@ spec:
     kind: Rule
     priority: 12
     services:
-    - serviceName: wrr1
-    - serviceName: wrr2
+    - name: wrr1
+      kind: NodeService
+    - name: wrr2
+      kind: NodeService
