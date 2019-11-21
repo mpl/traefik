@@ -40,7 +40,7 @@ func NewManager(configs map[string]*runtime.ServiceInfo, defaultRoundTripper htt
 		metricsRegistry:     metricsRegistry,
 		bufferPool:          newBufferPool(),
 		defaultRoundTripper: defaultRoundTripper,
-		balancers:           make(map[string][]healthcheck.BalancerHandler),
+		balancers:           make(map[string]healthcheck.BalancerHandler),
 		configs:             configs,
 		api:                 api,
 		rest:                rest,
@@ -53,7 +53,7 @@ type Manager struct {
 	metricsRegistry     metrics.Registry
 	bufferPool          httputil.BufferPool
 	defaultRoundTripper http.RoundTripper
-	balancers           map[string][]healthcheck.BalancerHandler
+	balancers           map[string]healthcheck.BalancerHandler
 	configs             map[string]*runtime.ServiceInfo
 	api                 http.Handler
 	rest                http.Handler
@@ -205,7 +205,8 @@ func (m *Manager) getLoadBalancerServiceHandler(
 	}
 
 	// TODO rename and checks
-	m.balancers[serviceName] = append(m.balancers[serviceName], balancer)
+	//	m.balancers[serviceName] = append(m.balancers[serviceName], balancer)
+	m.balancers[serviceName] = balancer
 
 	// Empty (backend with no servers)
 	return emptybackendhandler.New(balancer), nil
@@ -239,7 +240,7 @@ func (m *Manager) LaunchHealthCheck() {
 	healthcheck.GetHealthCheck().SetBackendsConfiguration(context.Background(), backendConfigs)
 }
 
-func buildHealthCheckOptions(ctx context.Context, lb healthcheck.BalancerHandlers, backend string, hc *dynamic.HealthCheck) *healthcheck.Options {
+func buildHealthCheckOptions(ctx context.Context, lb healthcheck.BalancerHandler, backend string, hc *dynamic.HealthCheck) *healthcheck.Options {
 	if hc == nil || hc.Path == "" {
 		return nil
 	}
