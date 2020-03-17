@@ -281,6 +281,6 @@ func (c *Conn) Close() error {
 	c.listener.mu.Lock()
 	defer c.listener.mu.Unlock()
 	delete(c.listener.conns, c.rAddr.String())
-	c.ticker.Stop()
+	//	c.ticker.Stop()
 	return nil
 }
