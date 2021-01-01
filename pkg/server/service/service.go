@@ -48,6 +48,7 @@ func NewManager(configs map[string]*runtime.ServiceInfo, metricsRegistry metrics
 		bufferPool:          newBufferPool(),
 		roundTripperManager: roundTripperManager,
 		balancers:           make(map[string]healthcheck.Balancers),
+		serviceBalancers:    make(map[string]healthcheck.Balancers),
 		configs:             configs,
 	}
 }
@@ -63,7 +64,14 @@ type Manager struct {
 	// (e.g. if 2 routers refer to the same service name, 2 service handlers are created),
 	// which is why there is not just one Balancer per service name.
 	balancers map[string]healthcheck.Balancers
-	configs   map[string]*runtime.ServiceInfo
+	// serviceBalancers is like balancers, but for load-balancers of services (wrr), as
+	// opposed to load-balancers of servers (oxy). The values are healthcheck.Balancers
+	// because it is what e.g buildHealthCheckOptions takes and uses so it is simpler
+	// code-wise to have healthcheck.Balancers everywhere. But really behind it is
+	// wrr.Balancer, which only pretends to implement healthcheck.Balancers, so it is
+	// not ideal.
+	serviceBalancers map[string]healthcheck.Balancers
+	configs          map[string]*runtime.ServiceInfo
 }
 
 // BuildHTTP Creates a http.Handler for a service configuration.
@@ -161,9 +169,24 @@ func (m *Manager) getWRRServiceHandler(ctx context.Context, serviceName string, 
 		if err != nil {
 			return nil, err
 		}
-
 		balancer.AddService(service.Name, serviceHandler, service.Weight)
+		if config.HealthCheck == nil {
+			continue
+		}
+		childName := service.Name
+		updater, ok := serviceHandler.(healthcheck.StatusUpdater)
+		if !ok {
+			log.FromContext(ctx).Debugf("Child service %v will not propagate to its parent %v any status change", service.Name, serviceName)
+			continue
+		}
+		log.FromContext(ctx).Debugf("Child service %v will update parent %v on status change", service.Name, serviceName)
+		// TODO(mpl): do we make RegisterStatusUpdater return an error (e.g. in case the
+		// updater actually does not want healthcheck enabled, according to its own config)
+		updater.RegisterStatusUpdater(func(up bool) {
+			balancer.SetStatus(serviceName, childName, up)
+		})
 	}
+
 	return balancer, nil
 }
 
@@ -212,28 +235,24 @@ func (m *Manager) getLoadBalancerServiceHandler(ctx context.Context, serviceName
 	return emptybackendhandler.New(balancer), nil
 }
 
-// LaunchHealthCheck Launches the health checks.
+// LaunchHealthCheck launches the health checks.
 func (m *Manager) LaunchHealthCheck() {
 	backendConfigs := make(map[string]*healthcheck.BackendConfig)
 
 	for serviceName, balancers := range m.balancers {
 		ctx := log.With(context.Background(), log.Str(log.ServiceName, serviceName))
 
-		// TODO Should all the services handle healthcheck? Handle different types
 		service := m.configs[serviceName].LoadBalancer
 
 		// Health Check
-		var backendHealthCheck *healthcheck.BackendConfig
-		if hcOpts := buildHealthCheckOptions(ctx, balancers, serviceName, service.HealthCheck); hcOpts != nil {
-			log.FromContext(ctx).Debugf("Setting up healthcheck for service %s with %s", serviceName, *hcOpts)
-
-			hcOpts.Transport, _ = m.roundTripperManager.Get(service.ServersTransport)
-			backendHealthCheck = healthcheck.NewBackendConfig(*hcOpts, serviceName)
+		hcOpts := buildHealthCheckOptions(ctx, balancers, serviceName, service.HealthCheck)
+		if hcOpts == nil {
+			continue
 		}
+		hcOpts.Transport, _ = m.roundTripperManager.Get(service.ServersTransport)
+		log.FromContext(ctx).Debugf("Setting up healthcheck for service %s with %s", serviceName, *hcOpts)
 
-		if backendHealthCheck != nil {
-			backendConfigs[serviceName] = backendHealthCheck
-		}
+		backendConfigs[serviceName] = healthcheck.NewBackendConfig(*hcOpts, serviceName)
 	}
 
 	healthcheck.GetHealthCheck(m.metricsRegistry).SetBackendsConfiguration(context.Background(), backendConfigs)

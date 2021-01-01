@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -111,6 +112,7 @@ func TestSetBackendsConfiguration(t *testing.T) {
 				Interval: healthCheckInterval,
 				Timeout:  healthCheckTimeout,
 				LB:       lb,
+				IsLeaf:   true,
 			}, "backendName")
 
 			serverURL := testhelpers.MustParseURL(ts.URL)
@@ -152,6 +154,142 @@ func TestSetBackendsConfiguration(t *testing.T) {
 			assert.Equal(t, test.expectedGaugeValue, collectingMetrics.GaugeValue, "ServerUp Gauge")
 		})
 	}
+}
+
+func TestCheckServicesLB(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	lb1 := &testLoadBalancer{
+		name:    "lb1",
+		RWMutex: &sync.RWMutex{},
+		statusc: make(chan struct{}),
+	}
+	lb2 := &testLoadBalancer{
+		name:    "lb2",
+		RWMutex: &sync.RWMutex{},
+		statusc: make(chan struct{}),
+	}
+	lb := &testLoadBalancer{
+		name:    "servicesLB",
+		RWMutex: &sync.RWMutex{},
+		statusc: make(chan struct{}),
+	}
+	topLevelLB := &testLoadBalancer{
+		name:    "topLevelLB",
+		RWMutex: &sync.RWMutex{},
+		statusc: make(chan struct{}),
+	}
+
+	server1, err := url.Parse("http://server1")
+	assert.NoError(t, err)
+	lb1.servers = []*url.URL{server1}
+	server2, err := url.Parse("http://server2")
+	assert.NoError(t, err)
+	lb2.servers = []*url.URL{server2}
+
+	url1, err := url.Parse("fake://" + lb1.name)
+	assert.NoError(t, err)
+	lb.servers = []*url.URL{url1}
+
+	url2, err := url.Parse("fake://" + lb2.name)
+	assert.NoError(t, err)
+	err = lb.UpsertServer(url2)
+	assert.NoError(t, err)
+
+	url3, err := url.Parse("fake://" + lb.name)
+	assert.NoError(t, err)
+	err = topLevelLB.UpsertServer(url3)
+	assert.NoError(t, err)
+
+	hc := HealthCheck{
+		Backends: make(map[string]*BackendConfig),
+	}
+
+	allServersDown := make(chan bool)
+	hc.RegisterStatusUpdater(lb.children(), true, lb.setStatus)
+	hc.RegisterStatusUpdater(topLevelLB.children(), true, topLevelLB.setStatus)
+	// Normally this would not be done, as topLevelLB is the child of nobody, but
+	// we're using the hook as a termination signal for the propagation.
+	hc.RegisterStatusUpdater([]string{topLevelLB.name}, false, func(name string, up, doPropagate bool) {
+		if len(topLevelLB.Servers()) == 0 {
+			allServersDown <- true
+			return
+		}
+		allServersDown <- false
+	})
+
+	backends := map[string]*BackendConfig{
+		lb1.name: NewBackendConfig(Options{
+			LB:      lb1,
+			IsLeaf:  false,
+			Statusc: lb1.statusc,
+		}, lb1.name),
+		lb2.name: NewBackendConfig(Options{
+			LB:      lb2,
+			IsLeaf:  false,
+			Statusc: lb2.statusc,
+		}, lb2.name),
+		lb.name: NewBackendConfig(Options{
+			LB:      lb,
+			IsLeaf:  false,
+			Statusc: lb.statusc,
+		}, lb.name),
+		topLevelLB.name: NewBackendConfig(Options{
+			LB:      topLevelLB,
+			IsLeaf:  false,
+			Statusc: topLevelLB.statusc,
+		}, topLevelLB.name),
+	}
+	hc.SetBackendsConfiguration(ctx, backends)
+
+	// simulates a triggered healthcheck on lb1
+	lb1.statusc <- struct{}{}
+	// simulates a triggered healthcheck on lb2
+	lb2.statusc <- struct{}{}
+
+	serversDown := true
+	timeout := 5 * time.Second
+	// we're expecting a propagation to topLevel twice, since there's a trigger on
+	// lb1 AND on lb2, hence the loop.
+	for i := 0; i < 2; i++ {
+		select {
+		case <-time.After(timeout):
+			t.Fatal("test did not complete in time")
+		case serversDown = <-allServersDown:
+		}
+	}
+	assert.Equal(t, serversDown, false)
+
+	// simulates a triggered healthcheck on lb1 after one of its children got downed.
+	lb1.servers = nil
+	lb2.servers = nil
+	lb1.statusc <- struct{}{}
+	lb2.statusc <- struct{}{}
+
+	for i := 0; i < 2; i++ {
+		select {
+		case <-time.After(timeout):
+			t.Fatal("test did not complete in time")
+		case serversDown = <-allServersDown:
+		}
+	}
+	assert.Equal(t, serversDown, true)
+
+	// Now "restore" lb1 and lb2 to UP state, and trigger the propagation.
+	lb1.servers = []*url.URL{server1}
+	lb2.servers = []*url.URL{server2}
+	lb1.statusc <- struct{}{}
+	lb2.statusc <- struct{}{}
+
+	for i := 0; i < 2; i++ {
+		select {
+		case <-time.After(timeout):
+			t.Fatal("test did not complete in time")
+		case serversDown = <-allServersDown:
+		}
+	}
+	assert.Equal(t, serversDown, false)
 }
 
 func TestNewRequest(t *testing.T) {
@@ -371,6 +509,9 @@ type testLoadBalancer struct {
 	servers            []*url.URL
 	// options is just to make sure that LBStatusUpdater forwards options on Upsert to its BalancerHandler
 	options []roundrobin.ServerOption
+	name    string
+	skip    map[string]bool
+	statusc chan struct{}
 }
 
 func (lb *testLoadBalancer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -395,7 +536,17 @@ func (lb *testLoadBalancer) UpsertServer(u *url.URL, options ...roundrobin.Serve
 }
 
 func (lb *testLoadBalancer) Servers() []*url.URL {
-	return lb.servers
+	lb.RLock()
+	defer lb.RUnlock()
+	var s []*url.URL
+	for _, v := range lb.servers {
+		name := strings.TrimPrefix(v.String(), "fake://")
+		if lb.skip[name] {
+			continue
+		}
+		s = append(s, v)
+	}
+	return s
 }
 
 func (lb *testLoadBalancer) Options() []roundrobin.ServerOption {
@@ -417,6 +568,26 @@ func (lb *testLoadBalancer) removeServer(u *url.URL) {
 	}
 
 	lb.servers = append(lb.servers[:i], lb.servers[i+1:]...)
+}
+
+func (lb *testLoadBalancer) children() []string {
+	var c []string
+	for _, v := range lb.Servers() {
+		c = append(c, strings.TrimPrefix(v.String(), "fake://"))
+	}
+	return c
+}
+
+func (lb *testLoadBalancer) setStatus(name string, up, doPropagate bool) {
+	lb.Lock()
+	defer lb.Unlock()
+	if lb.skip == nil {
+		lb.skip = make(map[string]bool)
+	}
+	lb.skip[name] = !up
+	if doPropagate {
+		lb.statusc <- struct{}{}
+	}
 }
 
 func newTestServer(done func(), healthSequence []int) *httptest.Server {
@@ -499,6 +670,7 @@ func TestNotFollowingRedirects(t *testing.T) {
 		Timeout:         healthCheckTimeout,
 		LB:              lb,
 		FollowRedirects: false,
+		IsLeaf:          true,
 	}, "backendName")
 
 	collectingMetrics := &testhelpers.CollectingGauge{}
