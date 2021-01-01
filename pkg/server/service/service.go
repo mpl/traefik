@@ -162,10 +162,12 @@ func (m *Manager) getWRRServiceHandler(ctx context.Context, serviceName string, 
 		if err != nil {
 			return nil, err
 		}
+
 		balancer.AddService(service.Name, serviceHandler, service.Weight)
 		if config.HealthCheck == nil {
 			continue
 		}
+
 		childName := service.Name
 		updater, ok := serviceHandler.(healthcheck.StatusUpdater)
 		if !ok {
@@ -176,6 +178,7 @@ func (m *Manager) getWRRServiceHandler(ctx context.Context, serviceName string, 
 		}); err != nil {
 			return nil, err
 		}
+
 		log.FromContext(ctx).Debugf("Child service %v will update parent %v on status change", childName, serviceName)
 	}
 

@@ -304,6 +304,7 @@ func (lb *LbStatusUpdater) RemoveServer(u *url.URL) error {
 	if err != nil {
 		return err
 	}
+
 	if lb.serviceInfo != nil {
 		lb.serviceInfo.UpdateServerStatus(u.String(), serverDown)
 	}
@@ -313,6 +314,7 @@ func (lb *LbStatusUpdater) RemoveServer(u *url.URL) error {
 		log.WithoutContext().Debugf("child %s now DOWN, but we were already DOWN, so no need to propagate.", u.String())
 		return nil
 	}
+
 	if len(lb.BalancerHandler.Servers()) > 0 {
 		// we were up, and we still are, no need to propagate
 		log.WithoutContext().Debugf("child %s now DOWN, but we still are UP, so no need to propagate.", u.String())
@@ -323,6 +325,7 @@ func (lb *LbStatusUpdater) RemoveServer(u *url.URL) error {
 	for _, fn := range lb.updaters {
 		fn(false)
 	}
+
 	return nil
 }
 
@@ -334,6 +337,7 @@ func (lb *LbStatusUpdater) UpsertServer(u *url.URL, options ...roundrobin.Server
 	if err != nil {
 		return err
 	}
+
 	if lb.serviceInfo != nil {
 		lb.serviceInfo.UpdateServerStatus(u.String(), serverUp)
 	}
@@ -348,6 +352,7 @@ func (lb *LbStatusUpdater) UpsertServer(u *url.URL, options ...roundrobin.Server
 	for _, fn := range lb.updaters {
 		fn(true)
 	}
+
 	return nil
 }
 
@@ -372,6 +377,7 @@ func (b Balancers) RemoveServer(u *url.URL) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -383,5 +389,6 @@ func (b Balancers) UpsertServer(u *url.URL, options ...roundrobin.ServerOption) 
 			return err
 		}
 	}
+
 	return nil
 }
