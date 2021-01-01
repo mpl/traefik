@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/traefik/traefik/v2/pkg/healthcheck"
+	"github.com/traefik/traefik/v2/pkg/log"
 )
 
 // EmptyBackend is a middleware that checks whether the current Backend
@@ -30,4 +31,16 @@ func (e *emptyBackend) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	} else {
 		e.next.ServeHTTP(rw, req)
 	}
+}
+
+// RegisterStatusUpdater adds fn to the list of hooks that are run when the
+// status of emptyBackend changes.
+// Not thread safe.
+func (e *emptyBackend) RegisterStatusUpdater(fn func(up bool)) {
+	n, ok := e.next.(healthcheck.StatusUpdater)
+	if !ok {
+		log.Errorf("%T not a healthcheck.StatusUpdater", e.next)
+		return
+	}
+	n.RegisterStatusUpdater(fn)
 }
