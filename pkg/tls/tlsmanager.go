@@ -132,6 +132,8 @@ func (m *Manager) Get(storeName, configName string) (*tls.Config, error) {
 	return tlsConfig, err
 }
 
+// getStore returns the store found for storeName. If not found, a new one is
+// created, populated with a default certificate, and written to m.stores.
 func (m *Manager) getStore(storeName string) *CertificateStore {
 	_, ok := m.stores[storeName]
 	if !ok {
