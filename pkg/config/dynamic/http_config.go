@@ -85,8 +85,9 @@ type MirrorService struct {
 
 // WeightedRoundRobin is a weighted round robin load-balancer of services.
 type WeightedRoundRobin struct {
-	Services []WRRService `json:"services,omitempty" toml:"services,omitempty" yaml:"services,omitempty" export:"true"`
-	Sticky   *Sticky      `json:"sticky,omitempty" toml:"sticky,omitempty" yaml:"sticky,omitempty" export:"true"`
+	Services    []WRRService `json:"services,omitempty" toml:"services,omitempty" yaml:"services,omitempty" export:"true"`
+	Sticky      *Sticky      `json:"sticky,omitempty" toml:"sticky,omitempty" yaml:"sticky,omitempty" export:"true"`
+	HealthCheck bool         `json:"healthCheck,omitempty" toml:"healthCheck,omitempty" yaml:"healthCheck,omitempty" export:"true"`
 }
 
 // +k8s:deepcopy-gen=true

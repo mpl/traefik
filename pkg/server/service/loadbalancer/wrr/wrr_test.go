@@ -24,7 +24,7 @@ func (r *responseRecorder) WriteHeader(statusCode int) {
 }
 
 func TestBalancer(t *testing.T) {
-	balancer := New(nil)
+	balancer := New(nil, false)
 
 	balancer.AddService("first", http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		rw.Header().Set("server", "first")
@@ -46,7 +46,7 @@ func TestBalancer(t *testing.T) {
 }
 
 func TestBalancerNoService(t *testing.T) {
-	balancer := New(nil)
+	balancer := New(nil, false)
 
 	recorder := httptest.NewRecorder()
 	balancer.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/", nil))
@@ -55,7 +55,7 @@ func TestBalancerNoService(t *testing.T) {
 }
 
 func TestBalancerOneServerZeroWeight(t *testing.T) {
-	balancer := New(nil)
+	balancer := New(nil, false)
 
 	balancer.AddService("first", http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		rw.Header().Set("server", "first")
@@ -73,7 +73,7 @@ func TestBalancerOneServerZeroWeight(t *testing.T) {
 }
 
 func TestBalancerAllServersZeroWeight(t *testing.T) {
-	balancer := New(nil)
+	balancer := New(nil, false)
 
 	balancer.AddService("test", http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {}), Int(0))
 	balancer.AddService("test2", http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {}), Int(0))
@@ -87,7 +87,7 @@ func TestBalancerAllServersZeroWeight(t *testing.T) {
 func TestSticky(t *testing.T) {
 	balancer := New(&dynamic.Sticky{
 		Cookie: &dynamic.Cookie{Name: "test"},
-	})
+	}, false)
 
 	balancer.AddService("first", http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		rw.Header().Set("server", "first")
@@ -118,7 +118,7 @@ func TestSticky(t *testing.T) {
 // TestBalancerBias makes sure that the WRR algorithm spreads elements evenly right from the start,
 // and that it does not "over-favor" the high-weighted ones with a biased start-up regime.
 func TestBalancerBias(t *testing.T) {
-	balancer := New(nil)
+	balancer := New(nil, false)
 
 	balancer.AddService("first", http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		rw.Header().Set("server", "A")

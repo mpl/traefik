@@ -155,7 +155,7 @@ func (m *Manager) getWRRServiceHandler(ctx context.Context, serviceName string, 
 		config.Sticky.Cookie.Name = cookie.GetName(config.Sticky.Cookie.Name, serviceName)
 	}
 
-	balancer := wrr.New(config.Sticky)
+	balancer := wrr.New(config.Sticky, config.HealthCheck)
 	for _, service := range config.Services {
 		serviceHandler, err := m.BuildHTTP(ctx, service.Name)
 		if err != nil {
@@ -163,6 +163,14 @@ func (m *Manager) getWRRServiceHandler(ctx context.Context, serviceName string, 
 		}
 
 		balancer.AddService(service.Name, serviceHandler, service.Weight)
+		// statuer, ok := serviceHandler.(wrr.Statuer)
+		// if ok {
+		// 	statuer.RegisterStatusChanged(func(up bool) {
+		// 		balancer.ChangeStatus(service.Name, up)
+		// 	})
+		// } else {
+		// 	log.WithoutContext().Errorf("Unable to register healthcheck: %T", serviceHandler)
+		// }
 	}
 	return balancer, nil
 }

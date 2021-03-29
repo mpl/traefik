@@ -14,6 +14,7 @@ import (
 	"github.com/traefik/traefik/v2/pkg/log"
 	"github.com/traefik/traefik/v2/pkg/middlewares/accesslog"
 	"github.com/traefik/traefik/v2/pkg/safe"
+	"github.com/traefik/traefik/v2/pkg/server/service/loadbalancer/wrr"
 )
 
 // Mirroring is an http.Handler that can mirror requests.
@@ -123,6 +124,11 @@ func (m *Mirroring) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 			handler.ServeHTTP(m.rw, r.WithContext(contextStopPropagation{ctx}))
 		}
 	})
+}
+
+func (b *Mirroring) RegisterStatusChanged(fn func(up bool)) {
+	s := b.handler.(wrr.Statuer)
+	s.RegisterStatusChanged(fn)
 }
 
 // AddMirror adds an httpHandler to mirror to.
