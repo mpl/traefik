@@ -35,11 +35,18 @@ type Balancer struct {
 	mutex       sync.RWMutex
 	handlers    []*namedHandler
 	curDeadline float64
+
+	healthcheck bool
+	status      map[string]struct{}
+	listeners   []func(up bool)
 }
 
 // New creates a new load balancer.
-func New(sticky *dynamic.Sticky) *Balancer {
-	balancer := &Balancer{}
+func New(sticky *dynamic.Sticky, healthcheck bool) *Balancer {
+	balancer := &Balancer{
+		status:      make(map[string]struct{}),
+		healthcheck: healthcheck,
+	}
 	if sticky != nil && sticky.Cookie != nil {
 		balancer.stickyCookie = &stickyCookie{
 			name:     sticky.Cookie.Name,
@@ -85,24 +92,37 @@ func (b *Balancer) nextServer() (*namedHandler, error) {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 
-	if len(b.handlers) == 0 {
+	if len(b.handlers) == 0 || len(b.status) == 0 {
 		return nil, fmt.Errorf("no servers in the pool")
 	}
 
-	// Pick handler with closest deadline.
-	handler := heap.Pop(b).(*namedHandler)
+	for {
+		// Pick handler with closest deadline.
+		handler := heap.Pop(b).(*namedHandler)
 
-	// curDeadline should be handler's deadline so that new added entry would have a fair competition environment with the old ones.
-	b.curDeadline = handler.deadline
-	handler.deadline += 1 / handler.weight
+		// curDeadline should be handler's deadline so that new added entry would have a fair competition environment with the old ones.
+		b.curDeadline = handler.deadline
+		handler.deadline += 1 / handler.weight
 
-	heap.Push(b, handler)
+		heap.Push(b, handler)
 
-	log.WithoutContext().Debugf("Service selected by WRR: %s", handler.name)
-	return handler, nil
+		if !b.healthcheck {
+			log.WithoutContext().Debugf("Service selected by WRR: %s", handler.name)
+			return handler, nil
+		}
+		if _, ok := b.status[handler.name]; ok {
+			log.WithoutContext().Debugf("Service selected by WRR: %s", handler.name)
+			return handler, nil
+		}
+	}
 }
 
 func (b *Balancer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	if len(b.status) == 0 {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
 	if b.stickyCookie != nil {
 		cookie, err := req.Cookie(b.stickyCookie.name)
 
@@ -112,7 +132,8 @@ func (b *Balancer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 		if err == nil && cookie != nil {
 			for _, handler := range b.handlers {
-				if handler.name == cookie.Value {
+				_, ok := b.status[handler.name]
+				if ok && handler.name == cookie.Value {
 					handler.ServeHTTP(w, req)
 					return
 				}
@@ -134,6 +155,26 @@ func (b *Balancer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	server.ServeHTTP(w, req)
 }
 
+func (b *Balancer) ChangeStatus(serviceName string, up bool) {
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+
+	if !up {
+		delete(b.status, serviceName)
+	} else {
+		b.status[serviceName] = struct{}{}
+	}
+
+	for _, fn := range b.listeners {
+		fn(len(b.status) > 0)
+	}
+}
+
+func (b *Balancer) RegisterStatusChanged(fn func(up bool)) {
+	fn(len(b.status) > 0)
+	b.listeners = append(b.listeners, fn)
+}
+
 // AddService adds a handler.
 // It is not thread safe with ServeHTTP.
 // A handler with a non-positive weight is ignored.
@@ -146,6 +187,17 @@ func (b *Balancer) AddService(name string, handler http.Handler, weight *int) {
 		return
 	}
 
+	if b.healthcheck {
+		statuer, ok := handler.(Statuer)
+		if ok {
+			statuer.RegisterStatusChanged(func(up bool) {
+				b.ChangeStatus(name, up)
+			})
+		} else {
+			log.WithoutContext().Errorf("Unable to register healthcheck: %T", handler)
+		}
+	}
+
 	h := &namedHandler{Handler: handler, name: name, weight: float64(w)}
 
 	// use RWLock to protect b.curDeadline
@@ -154,4 +206,8 @@ func (b *Balancer) AddService(name string, handler http.Handler, weight *int) {
 	b.mutex.RUnlock()
 
 	heap.Push(b, h)
+}
+
+type Statuer interface {
+	RegisterStatusChanged(func(up bool))
 }

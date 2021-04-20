@@ -83,110 +83,6 @@ func (p *Provider) Init() error {
 	return nil
 }
 
-// dockerData holds the need data to the provider.
-type dockerData struct {
-	ID              string
-	ServiceName     string
-	Name            string
-	Labels          map[string]string // List of labels set to container or service
-	NetworkSettings networkSettings
-	Health          string
-	Node            *dockertypes.ContainerNode
-	ExtraConf       configuration
-}
-
-// NetworkSettings holds the networks data to the provider.
-type networkSettings struct {
-	NetworkMode dockercontainertypes.NetworkMode
-	Ports       nat.PortMap
-	Networks    map[string]*networkData
-}
-
-// Network holds the network data to the provider.
-type networkData struct {
-	Name     string
-	Addr     string
-	Port     int
-	Protocol string
-	ID       string
-}
-
-func (p *Provider) createClient() (client.APIClient, error) {
-	opts, err := p.getClientOpts()
-	if err != nil {
-		return nil, err
-	}
-
-	httpHeaders := map[string]string{
-		"User-Agent": "Traefik " + version.Version,
-	}
-	opts = append(opts, client.WithHTTPHeaders(httpHeaders))
-
-	apiVersion := DockerAPIVersion
-	if p.SwarmMode {
-		apiVersion = SwarmAPIVersion
-	}
-	opts = append(opts, client.WithVersion(apiVersion))
-
-	return client.NewClientWithOpts(opts...)
-}
-
-func (p *Provider) getClientOpts() ([]client.Opt, error) {
-	helper, err := connhelper.GetConnectionHelper(p.Endpoint)
-	if err != nil {
-		return nil, err
-	}
-
-	// SSH
-	if helper != nil {
-		// https://github.com/docker/cli/blob/ebca1413117a3fcb81c89d6be226dcec74e5289f/cli/context/docker/load.go#L112-L123
-
-		httpClient := &http.Client{
-			Transport: &http.Transport{
-				DialContext: helper.Dialer,
-			},
-		}
-
-		return []client.Opt{
-			client.WithHTTPClient(httpClient),
-			client.WithTimeout(time.Duration(p.HTTPClientTimeout)),
-			client.WithHost(helper.Host), // To avoid 400 Bad Request: malformed Host header daemon error
-			client.WithDialContext(helper.Dialer),
-		}, nil
-	}
-
-	opts := []client.Opt{
-		client.WithHost(p.Endpoint),
-		client.WithTimeout(time.Duration(p.HTTPClientTimeout)),
-	}
-
-	if p.TLS != nil {
-		ctx := log.With(context.Background(), log.Str(log.ProviderName, "docker"))
-
-		conf, err := p.TLS.CreateTLSConfig(ctx)
-		if err != nil {
-			return nil, err
-		}
-
-		hostURL, err := client.ParseHostURL(p.Endpoint)
-		if err != nil {
-			return nil, err
-		}
-
-		tr := &http.Transport{
-			TLSClientConfig: conf,
-		}
-
-		if err := sockets.ConfigureTransport(tr, hostURL.Scheme, hostURL.Host); err != nil {
-			return nil, err
-		}
-
-		opts = append(opts, client.WithHTTPClient(&http.Client{Transport: tr, Timeout: time.Duration(p.HTTPClientTimeout)}))
-	}
-
-	return opts, nil
-}
-
 // Provide allows the docker provider to provide configurations to traefik using the given configuration channel.
 func (p *Provider) Provide(configurationChan chan<- dynamic.Message, pool *safe.Pool) error {
 	pool.GoCtx(func(routineCtx context.Context) {
@@ -334,6 +230,110 @@ func (p *Provider) Provide(configurationChan chan<- dynamic.Message, pool *safe.
 	})
 
 	return nil
+}
+
+// dockerData holds the need data to the provider.
+type dockerData struct {
+	ID              string
+	ServiceName     string
+	Name            string
+	Labels          map[string]string // List of labels set to container or service
+	NetworkSettings networkSettings
+	Health          string
+	Node            *dockertypes.ContainerNode
+	ExtraConf       configuration
+}
+
+// NetworkSettings holds the networks data to the provider.
+type networkSettings struct {
+	NetworkMode dockercontainertypes.NetworkMode
+	Ports       nat.PortMap
+	Networks    map[string]*networkData
+}
+
+// Network holds the network data to the provider.
+type networkData struct {
+	Name     string
+	Addr     string
+	Port     int
+	Protocol string
+	ID       string
+}
+
+func (p *Provider) createClient() (client.APIClient, error) {
+	opts, err := p.getClientOpts()
+	if err != nil {
+		return nil, err
+	}
+
+	httpHeaders := map[string]string{
+		"User-Agent": "Traefik " + version.Version,
+	}
+	opts = append(opts, client.WithHTTPHeaders(httpHeaders))
+
+	apiVersion := DockerAPIVersion
+	if p.SwarmMode {
+		apiVersion = SwarmAPIVersion
+	}
+	opts = append(opts, client.WithVersion(apiVersion))
+
+	return client.NewClientWithOpts(opts...)
+}
+
+func (p *Provider) getClientOpts() ([]client.Opt, error) {
+	helper, err := connhelper.GetConnectionHelper(p.Endpoint)
+	if err != nil {
+		return nil, err
+	}
+
+	// SSH
+	if helper != nil {
+		// https://github.com/docker/cli/blob/ebca1413117a3fcb81c89d6be226dcec74e5289f/cli/context/docker/load.go#L112-L123
+
+		httpClient := &http.Client{
+			Transport: &http.Transport{
+				DialContext: helper.Dialer,
+			},
+		}
+
+		return []client.Opt{
+			client.WithHTTPClient(httpClient),
+			client.WithTimeout(time.Duration(p.HTTPClientTimeout)),
+			client.WithHost(helper.Host), // To avoid 400 Bad Request: malformed Host header daemon error
+			client.WithDialContext(helper.Dialer),
+		}, nil
+	}
+
+	opts := []client.Opt{
+		client.WithHost(p.Endpoint),
+		client.WithTimeout(time.Duration(p.HTTPClientTimeout)),
+	}
+
+	if p.TLS != nil {
+		ctx := log.With(context.Background(), log.Str(log.ProviderName, "docker"))
+
+		conf, err := p.TLS.CreateTLSConfig(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		hostURL, err := client.ParseHostURL(p.Endpoint)
+		if err != nil {
+			return nil, err
+		}
+
+		tr := &http.Transport{
+			TLSClientConfig: conf,
+		}
+
+		if err := sockets.ConfigureTransport(tr, hostURL.Scheme, hostURL.Host); err != nil {
+			return nil, err
+		}
+
+		opts = append(opts, client.WithHTTPClient(&http.Client{Transport: tr, Timeout: time.Duration(p.HTTPClientTimeout)}))
+	}
+
+	return opts, nil
 }
 
 func (p *Provider) listContainers(ctx context.Context, dockerClient client.ContainerAPIClient) ([]dockerData, error) {

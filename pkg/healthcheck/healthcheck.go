@@ -277,6 +277,12 @@ func NewLBStatusUpdater(bh BalancerHandler, info *runtime.ServiceInfo) *LbStatus
 type LbStatusUpdater struct {
 	BalancerHandler
 	serviceInfo *runtime.ServiceInfo // can be nil
+	listeners   []func(up bool)
+}
+
+func (lb *LbStatusUpdater) RegisterStatusChanged(fn func(up bool)) {
+	fn(len(lb.BalancerHandler.Servers()) > 0)
+	lb.listeners = append(lb.listeners, fn)
 }
 
 // RemoveServer removes the given server from the BalancerHandler,
@@ -285,7 +291,13 @@ func (lb *LbStatusUpdater) RemoveServer(u *url.URL) error {
 	err := lb.BalancerHandler.RemoveServer(u)
 	if err == nil && lb.serviceInfo != nil {
 		lb.serviceInfo.UpdateServerStatus(u.String(), serverDown)
+
+		up := len(lb.BalancerHandler.Servers()) > 0
+		for _, fn := range lb.listeners {
+			fn(up)
+		}
 	}
+
 	return err
 }
 
@@ -295,7 +307,13 @@ func (lb *LbStatusUpdater) UpsertServer(u *url.URL, options ...roundrobin.Server
 	err := lb.BalancerHandler.UpsertServer(u, options...)
 	if err == nil && lb.serviceInfo != nil {
 		lb.serviceInfo.UpdateServerStatus(u.String(), serverUp)
+
+		up := len(lb.BalancerHandler.Servers()) > 0
+		for _, fn := range lb.listeners {
+			fn(up)
+		}
 	}
+
 	return err
 }
 

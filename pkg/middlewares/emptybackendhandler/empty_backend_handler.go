@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"github.com/traefik/traefik/v2/pkg/healthcheck"
+	"github.com/traefik/traefik/v2/pkg/log"
+	"github.com/traefik/traefik/v2/pkg/server/service/loadbalancer/wrr"
 )
 
 // EmptyBackend is a middleware that checks whether the current Backend
@@ -29,5 +31,14 @@ func (e *emptyBackend) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		e.next.ServeHTTP(rw, req)
+	}
+}
+
+func (e *emptyBackend) RegisterStatusChanged(fn func(up bool)) {
+	n, ok := e.next.(wrr.Statuer)
+	if ok {
+		n.RegisterStatusChanged(fn)
+	} else {
+		log.Errorf("empty %T", e.next)
 	}
 }
