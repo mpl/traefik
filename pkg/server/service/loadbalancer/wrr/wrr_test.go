@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/traefik/traefik/v2/pkg/config/dynamic"
@@ -86,8 +85,8 @@ func TestBalancerNoServiceUp(t *testing.T) {
 		rw.WriteHeader(http.StatusInternalServerError)
 	}), Int(1))
 
-	balancer.SetStatus("first", false, false)
-	balancer.SetStatus("second", false, false)
+	balancer.SetStatus("parent", "first", false)
+	balancer.SetStatus("parent", "second", false)
 
 	recorder := httptest.NewRecorder()
 	balancer.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/", nil))
@@ -106,7 +105,7 @@ func TestBalancerOneServerDown(t *testing.T) {
 	balancer.AddService("second", http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		rw.WriteHeader(http.StatusInternalServerError)
 	}), Int(1))
-	balancer.SetStatus("second", false, false)
+	balancer.SetStatus("parent", "second", false)
 
 	recorder := &responseRecorder{ResponseRecorder: httptest.NewRecorder(), save: map[string]int{}}
 	for i := 0; i < 3; i++ {
@@ -128,7 +127,7 @@ func TestBalancerDownThenUp(t *testing.T) {
 		rw.Header().Set("server", "second")
 		rw.WriteHeader(http.StatusOK)
 	}), Int(1))
-	balancer.SetStatus("second", false, false)
+	balancer.SetStatus("parent", "second", false)
 
 	recorder := &responseRecorder{ResponseRecorder: httptest.NewRecorder(), save: map[string]int{}}
 	for i := 0; i < 3; i++ {
@@ -136,7 +135,7 @@ func TestBalancerDownThenUp(t *testing.T) {
 	}
 	assert.Equal(t, 3, recorder.save["first"])
 
-	balancer.SetStatus("second", true, false)
+	balancer.SetStatus("parent", "second", true)
 	recorder = &responseRecorder{ResponseRecorder: httptest.NewRecorder(), save: map[string]int{}}
 	for i := 0; i < 2; i++ {
 		balancer.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/", nil))
@@ -165,12 +164,19 @@ func TestBalancerPropagate(t *testing.T) {
 	balancer2.AddService("fourth", http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		rw.Header().Set("server", "fourth")
 		rw.WriteHeader(http.StatusOK)
-		// rw.WriteHeader(http.StatusInternalServerError)
 	}), Int(1))
 
 	topBalancer := New(nil)
 	topBalancer.AddService("balancer1", balancer1, Int(1))
+	balancer1.RegisterStatusUpdater(func(up bool) {
+		topBalancer.SetStatus("top", "balancer1", up)
+		// TODO(mpl): if test gets flaky, add channel or something here to signal that
+		// propagation is done, and wait on it before sending request.
+	})
 	topBalancer.AddService("balancer2", balancer2, Int(1))
+	balancer2.RegisterStatusUpdater(func(up bool) {
+		topBalancer.SetStatus("top", "balancer2", up)
+	})
 
 	recorder := &responseRecorder{ResponseRecorder: httptest.NewRecorder(), save: map[string]int{}}
 	for i := 0; i < 8; i++ {
@@ -183,45 +189,8 @@ func TestBalancerPropagate(t *testing.T) {
 	wantStatus := []int{200, 200, 200, 200, 200, 200, 200, 200}
 	assert.Equal(t, wantStatus, recorder.status)
 
-	// mocking of the healthcheck goroutine.
-	go func() {
-		// wait for the two children of balancer2 to get downed.
-		for i := 0; i < 2; i++ {
-			tm := time.NewTimer(5 * time.Second)
-			select {
-			case <-balancer2.statusc:
-				down := true
-				for _, v := range balancer2.status {
-					if v {
-						down = false
-						break
-					}
-				}
-				if down {
-					topBalancer.SetStatus("balancer2", false, false)
-				}
-			case <-tm.C:
-				t.Errorf("timeout")
-			}
-			if !tm.Stop() {
-				<-tm.C
-			}
-		}
-		// one more time to force main thread to wait for the propagation to be done,
-		// before it checks the state of the tree.
-		tm := time.NewTimer(5 * time.Second)
-		select {
-		case balancer2.statusc <- struct{}{}:
-		case <-tm.C:
-			t.Errorf("timeout")
-		}
-		if !tm.Stop() {
-			<-tm.C
-		}
-	}()
-
 	// fourth gets downed, but balancer2 still up since third is still up.
-	balancer2.SetStatus("fourth", false, true)
+	balancer2.SetStatus("top", "fourth", false)
 	recorder = &responseRecorder{ResponseRecorder: httptest.NewRecorder(), save: map[string]int{}}
 	for i := 0; i < 8; i++ {
 		topBalancer.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/", nil))
@@ -235,9 +204,7 @@ func TestBalancerPropagate(t *testing.T) {
 
 	// third gets downed, and the propagation triggers balancer2 to be marked as
 	// down as well for topBalancer.
-	balancer2.SetStatus("third", false, true)
-	// Not a real status signal, we just use statusc to synchronize before going on.
-	<-balancer2.statusc
+	balancer2.SetStatus("top", "third", false)
 	recorder = &responseRecorder{ResponseRecorder: httptest.NewRecorder(), save: map[string]int{}}
 	for i := 0; i < 8; i++ {
 		topBalancer.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/", nil))

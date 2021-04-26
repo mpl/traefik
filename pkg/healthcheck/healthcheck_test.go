@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -112,7 +111,6 @@ func TestSetBackendsConfiguration(t *testing.T) {
 				Interval: healthCheckInterval,
 				Timeout:  healthCheckTimeout,
 				LB:       lb,
-				IsLeaf:   true,
 			}, "backendName")
 
 			serverURL := testhelpers.MustParseURL(ts.URL)
@@ -156,6 +154,7 @@ func TestSetBackendsConfiguration(t *testing.T) {
 	}
 }
 
+/*
 func TestCheckServicesLB(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -291,6 +290,7 @@ func TestCheckServicesLB(t *testing.T) {
 	}
 	assert.Equal(t, serversDown, false)
 }
+*/
 
 func TestNewRequest(t *testing.T) {
 	type expected struct {
@@ -536,17 +536,7 @@ func (lb *testLoadBalancer) UpsertServer(u *url.URL, options ...roundrobin.Serve
 }
 
 func (lb *testLoadBalancer) Servers() []*url.URL {
-	lb.RLock()
-	defer lb.RUnlock()
-	var s []*url.URL
-	for _, v := range lb.servers {
-		name := strings.TrimPrefix(v.String(), "fake://")
-		if lb.skip[name] {
-			continue
-		}
-		s = append(s, v)
-	}
-	return s
+	return lb.servers
 }
 
 func (lb *testLoadBalancer) Options() []roundrobin.ServerOption {
@@ -568,26 +558,6 @@ func (lb *testLoadBalancer) removeServer(u *url.URL) {
 	}
 
 	lb.servers = append(lb.servers[:i], lb.servers[i+1:]...)
-}
-
-func (lb *testLoadBalancer) children() []string {
-	var c []string
-	for _, v := range lb.Servers() {
-		c = append(c, strings.TrimPrefix(v.String(), "fake://"))
-	}
-	return c
-}
-
-func (lb *testLoadBalancer) setStatus(name string, up, doPropagate bool) {
-	lb.Lock()
-	defer lb.Unlock()
-	if lb.skip == nil {
-		lb.skip = make(map[string]bool)
-	}
-	lb.skip[name] = !up
-	if doPropagate {
-		lb.statusc <- struct{}{}
-	}
 }
 
 func newTestServer(done func(), healthSequence []int) *httptest.Server {
@@ -670,7 +640,6 @@ func TestNotFollowingRedirects(t *testing.T) {
 		Timeout:         healthCheckTimeout,
 		LB:              lb,
 		FollowRedirects: false,
-		IsLeaf:          true,
 	}, "backendName")
 
 	collectingMetrics := &testhelpers.CollectingGauge{}

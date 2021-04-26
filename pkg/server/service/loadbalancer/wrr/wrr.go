@@ -40,10 +40,6 @@ type Balancer struct {
 	// for "down". Eeach service is considered "up" by default on creation.
 	status   map[string]bool
 	updaters []func(bool)
-	// statusc is used to trigger a health/status check of Balancer (actually of all
-	// the balancers sharing the same config), whenever the status of one of its
-	// children services changes.
-	statusc chan struct{}
 }
 
 // New creates a new load balancer.
@@ -91,11 +87,6 @@ func (b *Balancer) Pop() interface{} {
 	h := b.handlers[len(b.handlers)-1]
 	b.handlers = b.handlers[0 : len(b.handlers)-1]
 	return h
-}
-
-// Statusc returns the channel used to propagate status to the healthchecker.
-func (b *Balancer) Statusc() chan struct{} {
-	return b.statusc
 }
 
 // TODO(mpl): optimize, either by having b.status actually only contain the up
