@@ -327,7 +327,14 @@ func (s *HealthCheckSuite) TestPropagate(c *check.C) {
 
 	// Verify load-balancing on foo, still works, and that we're getting wsp1, wsp4, wsp1, wsp4, etc.
 	for i := 0; i < 4; i++ {
-		err = try.Request(rootReq, 3*time.Second, try.StatusCodeIs(http.StatusOK))
+		var want string
+		// TODO(mpl): use mod
+		if i == 0 || i == 2 {
+			want = `IP: ` + s.whoami4IP
+		} else {
+			want = `IP: ` + s.whoami2IP
+		}
+		err = try.Request(rootReq, 3*time.Second, try.BodyContains(want))
 		c.Assert(err, checker.IsNil)
 	}
 
