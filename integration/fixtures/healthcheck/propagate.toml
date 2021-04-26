@@ -20,13 +20,13 @@
 [http.routers]
   [http.routers.wsp-router-1]
     service = "wsp-service1"
-    rule = " PathPrefix(`/`)"
+    rule = "Host(`root.localhost`)"
   [http.routers.wsp-router-2]
     service = "wsp-service2"
-    rule = " PathPrefix(`/foo`)"
+    rule = "Host(`foo.localhost`)"
   [http.routers.wsp-router-3]
     service = "wsp-service3"
-    rule = " PathPrefix(`/bar`)"
+    rule = "Host(`bar.localhost`)"
 
 # TODO(mpl): verify I did not forget quotes in doc examples
 [http.services]

@@ -293,17 +293,19 @@ func (s *HealthCheckSuite) TestPropagate(c *check.C) {
 	defer s.killCmd(cmd)
 
 	// wait for traefik
-	err = try.GetRequest("http://127.0.0.1:8080/api/rawdata", 60*time.Second, try.BodyContains("Host(`test.localhost`)"))
+	err = try.GetRequest("http://127.0.0.1:8080/api/rawdata", 60*time.Second, try.BodyContains("Host(`root.localhost`)"))
 	c.Assert(err, checker.IsNil)
 
 	frontendHealthReq, err := http.NewRequest(http.MethodGet, "http://127.0.0.1:8000/health", nil)
 	c.Assert(err, checker.IsNil)
-	frontendHealthReq.Host = "test.localhost"
+	frontendHealthReq.Host = "root.localhost"
 
-	err = try.Request(frontendHealthReq, 500*time.Millisecond, try.StatusCodeIs(http.StatusOK))
+	rootReq, err := http.NewRequest(http.MethodGet, "http://127.0.0.1:8000", nil)
 	c.Assert(err, checker.IsNil)
+	rootReq.Host = "root.localhost"
 
-	return
+	err = try.Request(rootReq, 500*time.Millisecond, try.StatusCodeIs(http.StatusOK))
+	c.Assert(err, checker.IsNil)
 
 	// Bring whoami1 and whoami3 down
 	client := &http.Client{}
@@ -315,14 +317,21 @@ func (s *HealthCheckSuite) TestPropagate(c *check.C) {
 		c.Assert(err, checker.IsNil)
 	}
 
-	fooReq, err := http.NewRequest(http.MethodGet, "http://127.0.0.1:8000/foo", nil)
-	c.Assert(err, checker.IsNil)
-	frontendHealthReq.Host = "test.localhost"
+	time.Sleep(time.Second)
 
-	// Verify no backend service is available due to failing health checks
-	// for i:=0;i<4;i++ {
-	err = try.Request(frontendHealthReq, 3*time.Second, try.StatusCodeIs(http.StatusServiceUnavailable))
-	c.Assert(err, checker.IsNil)
+	/*
+		rootReq, err := http.NewRequest(http.MethodGet, "http://127.0.0.1:8000", nil)
+		c.Assert(err, checker.IsNil)
+		rootReq.Host = "root.localhost"
+	*/
+
+	// Verify load-balancing on foo, still works, and that we're getting wsp1, wsp4, wsp1, wsp4, etc.
+	for i := 0; i < 4; i++ {
+		err = try.Request(rootReq, 3*time.Second, try.StatusCodeIs(http.StatusOK))
+		c.Assert(err, checker.IsNil)
+	}
+
+	return
 
 	// Change one whoami health to 200
 	statusOKReq1, err := http.NewRequest(http.MethodPost, "http://"+s.whoami1IP+"/health", bytes.NewBuffer([]byte("200")))
