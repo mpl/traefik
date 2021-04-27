@@ -38,14 +38,16 @@ type Balancer struct {
 	// status describes the condition of each child service of this load-balancer.
 	// It is keyed by name of the service, and the value is true for "up", and false
 	// for "down". Eeach service is considered "up" by default on creation.
-	status   map[string]bool
+	//	status   map[string]bool
+	status   map[string]struct{}
 	updaters []func(bool)
 }
 
 // New creates a new load balancer.
 func New(sticky *dynamic.Sticky) *Balancer {
 	balancer := &Balancer{
-		status: make(map[string]bool),
+		//		status: make(map[string]bool),
+		status: make(map[string]struct{}),
 		// TODO(mpl): haven't initialized updaters on purpose here. think about it harder.
 	}
 	if sticky != nil && sticky.Cookie != nil {
@@ -89,30 +91,19 @@ func (b *Balancer) Pop() interface{} {
 	return h
 }
 
-// TODO(mpl): optimize, either by having b.status actually only contain the up
-// ones, or by storing the whole state of b in a new field.
-func (b *Balancer) isUP() bool {
-	for _, up := range b.status {
-		if up {
-			return true
-		}
-	}
-	return false
-}
-
 // TODO(mpl): doc, and remove parent (even though convenient for debugging).
 func (b *Balancer) SetStatus(parentName, name string, up bool) {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 
-	if _, ok := b.status[name]; !ok {
-		return
-	}
-
-	upBefore := b.isUP()
+	upBefore := len(b.status) > 0
 
 	log.WithoutContext().Debugf("Setting status of %s to %v on %s", name, up, parentName)
-	b.status[name] = up
+	if up {
+		b.status[name] = struct{}{}
+	} else {
+		delete(b.status, name)
+	}
 
 	if !upBefore {
 		if !up {
@@ -128,7 +119,7 @@ func (b *Balancer) SetStatus(parentName, name string, up bool) {
 		return
 	}
 
-	if b.isUP() {
+	if len(b.status) > 0 {
 		// we were up before and we still are, no need to propagate
 		log.WithoutContext().Debugf("No need to propagate that %s is still UP", parentName)
 		return
@@ -151,19 +142,10 @@ func (b *Balancer) nextServer() (*namedHandler, error) {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 
-	// TODO(mpl): maybe also use len(b.status) as fast fail sentinel
-	// It all depends on whether we want a different diagnostic for "no servers" VS "all servers are down".
 	if len(b.handlers) == 0 {
 		return nil, fmt.Errorf("no servers in the pool")
 	}
-	up := false
-	for _, h := range b.handlers {
-		if b.status[h.name] {
-			up = true
-			break
-		}
-	}
-	if !up {
+	if len(b.status) == 0 {
 		return nil, errNoAvailableServer
 	}
 
@@ -177,7 +159,7 @@ func (b *Balancer) nextServer() (*namedHandler, error) {
 		handler.deadline += 1 / handler.weight
 
 		heap.Push(b, handler)
-		if b.status[handler.name] {
+		if _, ok := b.status[handler.name]; ok {
 			break
 		}
 	}
@@ -200,9 +182,9 @@ func (b *Balancer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 					continue
 				}
 				b.mutex.RLock()
-				up := b.status[handler.name]
+				_, ok := b.status[handler.name]
 				b.mutex.RUnlock()
-				if !up {
+				if !ok {
 					continue
 				}
 				handler.ServeHTTP(w, req)
@@ -245,6 +227,6 @@ func (b *Balancer) AddService(name string, handler http.Handler, weight *int) {
 	b.mutex.Lock()
 	h.deadline = b.curDeadline + 1/h.weight
 	heap.Push(b, h)
-	b.status[name] = true
+	b.status[name] = struct{}{}
 	b.mutex.Unlock()
 }
