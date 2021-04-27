@@ -327,7 +327,9 @@ func (s *HealthCheckSuite) TestPropagate(c *check.C) {
 		} else {
 			want = `IP: ` + s.whoami2IP
 		}
-		err = try.Request(rootReq, 3*time.Second, try.BodyContains(want))
+		// N.B: using a Nanosecond here is important, because we actually want the request
+		// to be tried only once. And we're too lazy not to use try.Request.
+		err = try.Request(rootReq, time.Nanosecond, try.BodyContains(want))
 		c.Assert(err, checker.IsNil)
 	}
 
@@ -338,7 +340,7 @@ func (s *HealthCheckSuite) TestPropagate(c *check.C) {
 	// Verify load-balancing on foo still works, and that we're getting wsp2, wsp2, wsp2, wsp2, etc.
 	want = `IP: ` + s.whoami2IP
 	for i := 0; i < 4; i++ {
-		err = try.Request(fooReq, 3*time.Second, try.BodyContains(want))
+		err = try.Request(fooReq, time.Nanosecond, try.BodyContains(want))
 		c.Assert(err, checker.IsNil)
 	}
 
@@ -349,7 +351,7 @@ func (s *HealthCheckSuite) TestPropagate(c *check.C) {
 	// Verify load-balancing on bar still works, and that we're getting wsp2, wsp2, wsp2, wsp2, etc.
 	want = `IP: ` + s.whoami2IP
 	for i := 0; i < 4; i++ {
-		err = try.Request(barReq, 3*time.Second, try.BodyContains(want))
+		err = try.Request(barReq, time.Nanosecond, try.BodyContains(want))
 		c.Assert(err, checker.IsNil)
 	}
 
@@ -366,11 +368,11 @@ func (s *HealthCheckSuite) TestPropagate(c *check.C) {
 
 	// Verify that everything is down, and that we get 503s everywhere.
 	for i := 0; i < 2; i++ {
-		err = try.Request(rootReq, 500*time.Millisecond, try.StatusCodeIs(http.StatusServiceUnavailable))
+		err = try.Request(rootReq, time.Nanosecond, try.StatusCodeIs(http.StatusServiceUnavailable))
 		c.Assert(err, checker.IsNil)
-		err = try.Request(fooReq, 500*time.Millisecond, try.StatusCodeIs(http.StatusServiceUnavailable))
+		err = try.Request(fooReq, time.Nanosecond, try.StatusCodeIs(http.StatusServiceUnavailable))
 		c.Assert(err, checker.IsNil)
-		err = try.Request(barReq, 500*time.Millisecond, try.StatusCodeIs(http.StatusServiceUnavailable))
+		err = try.Request(barReq, time.Nanosecond, try.StatusCodeIs(http.StatusServiceUnavailable))
 		c.Assert(err, checker.IsNil)
 	}
 
@@ -386,33 +388,26 @@ func (s *HealthCheckSuite) TestPropagate(c *check.C) {
 	time.Sleep(time.Second)
 
 	// Verify everything is up on root router.
-	//	wantIPs := []string{s.whoami1IP, s.whoami3IP, s.whoami2IP, s.whoami4IP}
-	// wantIPs := []string{s.whoami1IP, s.whoami1IP, s.whoami1IP, s.whoami1IP}
-	wantIPs := []string{"BOOYAH", "BOOYAH", "BOOYAH", "BOOYAH"}
+	wantIPs := []string{s.whoami3IP, s.whoami1IP, s.whoami4IP, s.whoami2IP}
 	for i := 0; i < 4; i++ {
 		want := `IP: ` + wantIPs[i]
-		err = try.Request(rootReq, 3*time.Second, try.BodyContains(want))
-		//		c.Assert(err, checker.IsNil)
-		c.Check(err, checker.IsNil)
+		err = try.Request(rootReq, time.Nanosecond, try.BodyContains(want))
+		c.Assert(err, checker.IsNil)
 	}
 
-	return
-
 	// Verify everything is up on foo router.
-	//	wantIPs = []string{s.whoami1IP, s.whoami1IP, s.whoami3IP, s.whoami2IP}
-	wantIPs = []string{s.whoami1IP, s.whoami1IP, s.whoami1IP, s.whoami1IP}
+	wantIPs = []string{s.whoami1IP, s.whoami1IP, s.whoami3IP, s.whoami2IP}
 	for i := 0; i < 4; i++ {
 		want := `IP: ` + wantIPs[i]
-		err = try.Request(fooReq, 3*time.Second, try.BodyContains(want))
+		err = try.Request(fooReq, time.Nanosecond, try.BodyContains(want))
 		c.Assert(err, checker.IsNil)
 	}
 
 	// Verify everything is up on bar router.
-	//	wantIPs = []string{s.whoami2IP, s.whoami1IP, s.whoami3IP, s.whoami2IP}
 	wantIPs = []string{s.whoami1IP, s.whoami1IP, s.whoami3IP, s.whoami2IP}
 	for i := 0; i < 4; i++ {
 		want := `IP: ` + wantIPs[i]
-		err = try.Request(barReq, 3*time.Second, try.BodyContains(want))
+		err = try.Request(barReq, time.Nanosecond, try.BodyContains(want))
 		c.Assert(err, checker.IsNil)
 	}
 }

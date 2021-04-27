@@ -46,9 +46,7 @@ type Balancer struct {
 // New creates a new load balancer.
 func New(sticky *dynamic.Sticky) *Balancer {
 	balancer := &Balancer{
-		//		status: make(map[string]bool),
 		status: make(map[string]struct{}),
-		// TODO(mpl): haven't initialized updaters on purpose here. think about it harder.
 	}
 	if sticky != nil && sticky.Cookie != nil {
 		balancer.stickyCookie = &stickyCookie{
@@ -91,28 +89,29 @@ func (b *Balancer) Pop() interface{} {
 	return h
 }
 
-// TODO(mpl): doc, and remove parent (even though convenient for debugging).
-func (b *Balancer) SetStatus(parentName, name string, up bool) {
+// SetStatus sets on the balancer that its given child is now of the given
+// status. balancerName is only needed for logging purposes.
+func (b *Balancer) SetStatus(balancerName, childName string, up bool) {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 
 	upBefore := len(b.status) > 0
 
-	log.WithoutContext().Debugf("Setting status of %s to %v on %s", name, up, parentName)
+	log.WithoutContext().Debugf("Setting status of %s to %v on %s", childName, up, balancerName)
 	if up {
-		b.status[name] = struct{}{}
+		b.status[childName] = struct{}{}
 	} else {
-		delete(b.status, name)
+		delete(b.status, childName)
 	}
 
 	if !upBefore {
 		if !up {
 			// We're still down, no need to propagate
-			log.WithoutContext().Debugf("No need to propagate that %s is still DOWN", parentName)
+			log.WithoutContext().Debugf("No need to propagate that %s is still DOWN", balancerName)
 			return
 		}
 		// propagate upwards that we are now UP
-		log.WithoutContext().Debugf("And propagating that status of %s is now UP", parentName)
+		log.WithoutContext().Debugf("And propagating that status of %s is now UP", balancerName)
 		for _, fn := range b.updaters {
 			fn(true)
 		}
@@ -121,17 +120,18 @@ func (b *Balancer) SetStatus(parentName, name string, up bool) {
 
 	if len(b.status) > 0 {
 		// we were up before and we still are, no need to propagate
-		log.WithoutContext().Debugf("No need to propagate that %s is still UP", parentName)
+		log.WithoutContext().Debugf("No need to propagate that %s is still UP", balancerName)
 		return
 	}
 	// propagate upwards that we are now DOWN
-	log.WithoutContext().Debugf("And propagating that status of %s is now DOWN", parentName)
+	log.WithoutContext().Debugf("And propagating that status of %s is now DOWN", balancerName)
 	for _, fn := range b.updaters {
 		fn(false)
 	}
 }
 
-// TODO(mpl): doc. specify not guarded.
+// RegisterStatusUpdater adds fn to the list of hooks that are run when the
+// status of the Balancer changes.
 func (b *Balancer) RegisterStatusUpdater(fn func(up bool)) {
 	b.updaters = append(b.updaters, fn)
 }
