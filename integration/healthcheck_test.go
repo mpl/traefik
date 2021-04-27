@@ -27,8 +27,6 @@ func (s *HealthCheckSuite) SetUpSuite(c *check.C) {
 	s.whoami1IP = s.composeProject.Container(c, "whoami1").NetworkSettings.IPAddress
 	s.whoami2IP = s.composeProject.Container(c, "whoami2").NetworkSettings.IPAddress
 	// TODO(mpl): create them only for TestPropagate?
-	s.whoami3IP = s.composeProject.Container(c, "whoami3").NetworkSettings.IPAddress
-	s.whoami4IP = s.composeProject.Container(c, "whoami4").NetworkSettings.IPAddress
 }
 
 func (s *HealthCheckSuite) TestSimpleConfiguration(c *check.C) {
@@ -278,6 +276,8 @@ func (s *HealthCheckSuite) TestMultipleRoutersOnSameService(c *check.C) {
 }
 
 func (s *HealthCheckSuite) TestPropagate(c *check.C) {
+	s.whoami3IP = s.composeProject.Container(c, "whoami3").NetworkSettings.IPAddress
+	s.whoami4IP = s.composeProject.Container(c, "whoami4").NetworkSettings.IPAddress
 	file := s.adaptFile(c, "fixtures/healthcheck/propagate.toml", struct {
 		Server1 string
 		Server2 string
@@ -319,17 +319,10 @@ func (s *HealthCheckSuite) TestPropagate(c *check.C) {
 
 	time.Sleep(time.Second)
 
-	/*
-		rootReq, err := http.NewRequest(http.MethodGet, "http://127.0.0.1:8000", nil)
-		c.Assert(err, checker.IsNil)
-		rootReq.Host = "root.localhost"
-	*/
-
-	// Verify load-balancing on foo, still works, and that we're getting wsp1, wsp4, wsp1, wsp4, etc.
+	// Verify load-balancing on root still works, and that we're getting wsp2, wsp4, wsp2, wsp4, etc.
+	var want string
 	for i := 0; i < 4; i++ {
-		var want string
-		// TODO(mpl): use mod
-		if i == 0 || i == 2 {
+		if i%2 == 0 {
 			want = `IP: ` + s.whoami4IP
 		} else {
 			want = `IP: ` + s.whoami2IP
@@ -338,34 +331,79 @@ func (s *HealthCheckSuite) TestPropagate(c *check.C) {
 		c.Assert(err, checker.IsNil)
 	}
 
-	return
-
-	// Change one whoami health to 200
-	statusOKReq1, err := http.NewRequest(http.MethodPost, "http://"+s.whoami1IP+"/health", bytes.NewBuffer([]byte("200")))
+	fooReq, err := http.NewRequest(http.MethodGet, "http://127.0.0.1:8000", nil)
 	c.Assert(err, checker.IsNil)
-	_, err = client.Do(statusOKReq1)
+	fooReq.Host = "foo.localhost"
+
+	// Verify load-balancing on foo still works, and that we're getting wsp2, wsp2, wsp2, wsp2, etc.
+	want = `IP: ` + s.whoami2IP
+	for i := 0; i < 4; i++ {
+		err = try.Request(fooReq, 3*time.Second, try.BodyContains(want))
+		c.Assert(err, checker.IsNil)
+	}
+
+	barReq, err := http.NewRequest(http.MethodGet, "http://127.0.0.1:8000", nil)
 	c.Assert(err, checker.IsNil)
+	barReq.Host = "bar.localhost"
 
-	// Verify frontend health : after
-	err = try.Request(frontendHealthReq, 3*time.Second, try.StatusCodeIs(http.StatusOK))
-	c.Assert(err, checker.IsNil)
+	// Verify load-balancing on bar still works, and that we're getting wsp2, wsp2, wsp2, wsp2, etc.
+	want = `IP: ` + s.whoami2IP
+	for i := 0; i < 4; i++ {
+		err = try.Request(barReq, 3*time.Second, try.BodyContains(want))
+		c.Assert(err, checker.IsNil)
+	}
 
-	frontendReq, err := http.NewRequest(http.MethodGet, "http://127.0.0.1:8000/", nil)
-	c.Assert(err, checker.IsNil)
-	frontendReq.Host = "test.localhost"
+	// Bring whoami2 and whoami4 down
+	whoamiHosts = []string{s.whoami2IP, s.whoami4IP}
+	for _, whoami := range whoamiHosts {
+		statusInternalServerErrorReq, err := http.NewRequest(http.MethodPost, "http://"+whoami+"/health", bytes.NewBuffer([]byte("500")))
+		c.Assert(err, checker.IsNil)
+		_, err = client.Do(statusInternalServerErrorReq)
+		c.Assert(err, checker.IsNil)
+	}
 
-	// Check if whoami1 responds
-	err = try.Request(frontendReq, 500*time.Millisecond, try.BodyContains(s.whoami1IP))
-	c.Assert(err, checker.IsNil)
+	time.Sleep(time.Second)
 
-	// Check if the service with bad health check (whoami2) never respond.
-	err = try.Request(frontendReq, 2*time.Second, try.BodyContains(s.whoami2IP))
-	c.Assert(err, checker.Not(checker.IsNil))
+	// Verify that everything is down, and that we get 503s everywhere.
+	for i := 0; i < 2; i++ {
+		err = try.Request(rootReq, 500*time.Millisecond, try.StatusCodeIs(http.StatusServiceUnavailable))
+		c.Assert(err, checker.IsNil)
+		err = try.Request(fooReq, 500*time.Millisecond, try.StatusCodeIs(http.StatusServiceUnavailable))
+		c.Assert(err, checker.IsNil)
+		err = try.Request(barReq, 500*time.Millisecond, try.StatusCodeIs(http.StatusServiceUnavailable))
+		c.Assert(err, checker.IsNil)
+	}
 
-	// TODO validate : run on 80
-	resp, err := http.Get("http://127.0.0.1:8000/")
+	// Bring everything back up.
+	whoamiHosts = []string{s.whoami1IP, s.whoami2IP, s.whoami3IP, s.whoami4IP}
+	for _, whoami := range whoamiHosts {
+		statusOKReq, err := http.NewRequest(http.MethodPost, "http://"+whoami+"/health", bytes.NewBuffer([]byte("200")))
+		c.Assert(err, checker.IsNil)
+		_, err = client.Do(statusOKReq)
+		c.Assert(err, checker.IsNil)
+	}
 
-	// Expected a 404 as we did not configure anything
-	c.Assert(err, checker.IsNil)
-	c.Assert(resp.StatusCode, checker.Equals, http.StatusNotFound)
+	// Verify everything is up on root router.
+	wantIPs := []string{s.whoami1IP, s.whoami3IP, s.whoami2IP, s.whoami4IP}
+	for i := 0; i < 4; i++ {
+		want := `IP: ` + wantIPs[i]
+		err = try.Request(rootReq, 3*time.Second, try.BodyContains(want))
+		c.Assert(err, checker.IsNil)
+	}
+
+	// Verify everything is up on foo router.
+	wantIPs = []string{s.whoami1IP, s.whoami1IP, s.whoami3IP, s.whoami2IP}
+	for i := 0; i < 4; i++ {
+		want := `IP: ` + wantIPs[i]
+		err = try.Request(fooReq, 3*time.Second, try.BodyContains(want))
+		c.Assert(err, checker.IsNil)
+	}
+
+	// Verify everything is up on bar router.
+	wantIPs = []string{s.whoami1IP, s.whoami1IP, s.whoami3IP, s.whoami2IP}
+	for i := 0; i < 4; i++ {
+		want := `IP: ` + wantIPs[i]
+		err = try.Request(barReq, 3*time.Second, try.BodyContains(want))
+		c.Assert(err, checker.IsNil)
+	}
 }
