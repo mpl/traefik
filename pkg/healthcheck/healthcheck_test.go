@@ -509,9 +509,6 @@ type testLoadBalancer struct {
 	servers            []*url.URL
 	// options is just to make sure that LBStatusUpdater forwards options on Upsert to its BalancerHandler
 	options []roundrobin.ServerOption
-	name    string
-	skip    map[string]bool
-	statusc chan struct{}
 }
 
 func (lb *testLoadBalancer) ServeHTTP(w http.ResponseWriter, req *http.Request) {

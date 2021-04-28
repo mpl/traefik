@@ -264,6 +264,9 @@ func checkHealth(serverURL *url.URL, backend *BackendConfig) error {
 	return nil
 }
 
+// StatusUpdater should be implemented by a service that, when its status
+// changes (e.g. all if its children are down), needs to propagate upwards (to
+// their parent(s)) that change.
 type StatusUpdater interface {
 	RegisterStatusUpdater(fn func(up bool))
 }
@@ -284,7 +287,8 @@ type LbStatusUpdater struct {
 	updaters    []func(up bool)
 }
 
-// TODO(mpl): doc. specify not guarded.
+// RegisterStatusUpdater adds fn to the list of hooks that are run when the
+// status of the Balancer changes.
 func (lb *LbStatusUpdater) RegisterStatusUpdater(fn func(up bool)) {
 	lb.updaters = append(lb.updaters, fn)
 }
