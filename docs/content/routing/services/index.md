@@ -855,7 +855,12 @@ This strategy is only available to load balance between [services](./index.md) a
 
 #### Health Check
 
-HealthCheck enables automatic self-healthcheck for this service, i.e. whenever one of its children (either another WeightedRoundRobin, or a ServersLoadBalancer) is reported as down, this service becomes aware of it, and takes it into account (i.e. it ignores the down child) when running the load-balancing algorithm. In addition, if the parent of this service also has HealthCheck enabled, this service reports to its parent any status change. None of the fields of HealthCheck are relevant here, and are therefore not taken into account.
+HealthCheck enables automatic self-healthcheck for this service, i.e. whenever one of its children
+(either another WeightedRoundRobin, or a ServersLoadBalancer) is reported as down, this service becomes aware of it,
+and takes it into account (i.e. it ignores the down child) when running the load-balancing algorithm.
+In addition, if the parent of this service also has HealthCheck enabled, this service reports to its parent any status
+change.
+None of the fields of HealthCheck are relevant here, and are therefore not taken into account.
 
 !!! info "Supported Providers"
     
