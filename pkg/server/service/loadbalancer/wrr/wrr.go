@@ -94,6 +94,7 @@ func (b *Balancer) Pop() interface{} {
 // SetStatus sets on the balancer that its given child is now of the given
 // status. balancerName is only needed for logging purposes.
 func (b *Balancer) SetStatus(balancerName, childName string, up bool) {
+	// TODO(mpl): pass a context around, instead of directly balancerName?
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 
@@ -135,8 +136,9 @@ func (b *Balancer) SetStatus(balancerName, childName string, up bool) {
 // RegisterStatusUpdater adds fn to the list of hooks that are run when the
 // status of the Balancer changes.
 // Not thread safe.
-func (b *Balancer) RegisterStatusUpdater(fn func(up bool)) {
+func (b *Balancer) RegisterStatusUpdater(fn func(up bool)) error {
 	b.updaters = append(b.updaters, fn)
+	return nil
 }
 
 var errNoAvailableServer = errors.New("no available server")

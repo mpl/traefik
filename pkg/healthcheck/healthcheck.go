@@ -268,7 +268,7 @@ func checkHealth(serverURL *url.URL, backend *BackendConfig) error {
 // changes (e.g. all if its children are down), needs to propagate upwards (to
 // their parent(s)) that change.
 type StatusUpdater interface {
-	RegisterStatusUpdater(fn func(up bool))
+	RegisterStatusUpdater(fn func(up bool)) error
 }
 
 // NewLBStatusUpdater returns a new LbStatusUpdater.
@@ -290,13 +290,15 @@ type LbStatusUpdater struct {
 // RegisterStatusUpdater adds fn to the list of hooks that are run when the
 // status of the Balancer changes.
 // Not thread safe.
-func (lb *LbStatusUpdater) RegisterStatusUpdater(fn func(up bool)) {
+func (lb *LbStatusUpdater) RegisterStatusUpdater(fn func(up bool)) error {
 	lb.updaters = append(lb.updaters, fn)
+	return nil
 }
 
 // RemoveServer removes the given server from the BalancerHandler,
 // and updates the status of the server to "DOWN".
 func (lb *LbStatusUpdater) RemoveServer(u *url.URL) error {
+	// TODO(mpl): pass a context around, for better logging?
 	upBefore := len(lb.BalancerHandler.Servers()) > 0
 	err := lb.BalancerHandler.RemoveServer(u)
 	if err != nil {

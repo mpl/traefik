@@ -169,15 +169,14 @@ func (m *Manager) getWRRServiceHandler(ctx context.Context, serviceName string, 
 		childName := service.Name
 		updater, ok := serviceHandler.(healthcheck.StatusUpdater)
 		if !ok {
-			log.FromContext(ctx).Debugf("Child service %v will not propagate to its parent %v any status change", service.Name, serviceName)
-			continue
+			return nil, fmt.Errorf("child service %v of %v not a healthcheck.StatusUpdater (%T)", childName, serviceName, serviceHandler)
 		}
-		log.FromContext(ctx).Debugf("Child service %v will update parent %v on status change", service.Name, serviceName)
-		// TODO(mpl): do we make RegisterStatusUpdater return an error (e.g. in case the
-		// updater actually does not want healthcheck enabled, according to its own config)
-		updater.RegisterStatusUpdater(func(up bool) {
+		if err := updater.RegisterStatusUpdater(func(up bool) {
 			balancer.SetStatus(serviceName, childName, up)
-		})
+		}); err != nil {
+			return nil, err
+		}
+		log.FromContext(ctx).Debugf("Child service %v will update parent %v on status change", childName, serviceName)
 	}
 
 	return balancer, nil
