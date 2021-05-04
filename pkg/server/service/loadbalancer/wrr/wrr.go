@@ -107,29 +107,23 @@ func (b *Balancer) SetStatus(balancerName, childName string, up bool) {
 		delete(b.status, childName)
 	}
 
-	if !upBefore {
-		if !up {
-			// We're still down, no need to propagate
-			log.WithoutContext().Debugf("No need to propagate that %s is still DOWN", balancerName)
-			return
-		}
-		// propagate upwards that we are now UP
-		log.WithoutContext().Debugf("And propagating that status of %s is now UP", balancerName)
-		for _, fn := range b.updaters {
-			fn(true)
-		}
+	upAfter := len(b.status) > 0
+	status := "UP"
+	if !upAfter {
+		status = "DOWN"
+	}
+
+	// No Status Change
+	if upBefore == upAfter {
+		// We're still with the same status, no need to propagate
+		log.WithoutContext().Debugf("No need to propagate that %s is still %s", balancerName, status)
 		return
 	}
 
-	if len(b.status) > 0 {
-		// we were up before and we still are, no need to propagate
-		log.WithoutContext().Debugf("No need to propagate that %s is still UP", balancerName)
-		return
-	}
-	// propagate upwards that we are now DOWN
-	log.WithoutContext().Debugf("And propagating that status of %s is now DOWN", balancerName)
+	// Status Change
+	log.WithoutContext().Debugf("And propagating that status of %s is now %s", balancerName, status)
 	for _, fn := range b.updaters {
-		fn(false)
+		fn(upAfter)
 	}
 }
 
