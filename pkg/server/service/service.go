@@ -169,10 +169,12 @@ func (m *Manager) getWRRServiceHandler(ctx context.Context, serviceName string, 
 		}
 
 		childName := service.Name
+
 		updater, ok := serviceHandler.(healthcheck.StatusUpdater)
 		if !ok {
 			return nil, fmt.Errorf("child service %v of %v not a healthcheck.StatusUpdater (%T)", childName, serviceName, serviceHandler)
 		}
+
 		if err := updater.RegisterStatusUpdater(func(up bool) {
 			balancer.SetStatus(serviceName, childName, up)
 		}); err != nil {

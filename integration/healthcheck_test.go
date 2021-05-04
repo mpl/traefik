@@ -468,7 +468,6 @@ func (s *HealthCheckSuite) TestPropagateReload(c *check.C) {
 
 	// Enable the healthcheck on the root WSP (wsp-service1) and let Traefik reload the config
 	fr1, err := os.OpenFile(withoutHealthCheck, os.O_APPEND|os.O_WRONLY, 0644)
-	defer fr1.Close()
 	c.Assert(fr1, checker.NotNil)
 	c.Assert(err, checker.IsNil)
 	err = fr1.Truncate(0)
@@ -477,6 +476,8 @@ func (s *HealthCheckSuite) TestPropagateReload(c *check.C) {
 	fr2, err := os.ReadFile(withHealthCheck)
 	c.Assert(err, checker.IsNil)
 	_, err = fmt.Fprint(fr1, string(fr2))
+	c.Assert(err, checker.IsNil)
+	err = fr1.Close()
 	c.Assert(err, checker.IsNil)
 
 	// wait for traefik

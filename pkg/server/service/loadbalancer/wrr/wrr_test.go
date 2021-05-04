@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/traefik/traefik/v2/pkg/config/dynamic"
 )
 
@@ -168,15 +169,17 @@ func TestBalancerPropagate(t *testing.T) {
 
 	topBalancer := New(nil)
 	topBalancer.AddService("balancer1", balancer1, Int(1))
-	balancer1.RegisterStatusUpdater(func(up bool) {
+	err := balancer1.RegisterStatusUpdater(func(up bool) {
 		topBalancer.SetStatus("top", "balancer1", up)
 		// TODO(mpl): if test gets flaky, add channel or something here to signal that
 		// propagation is done, and wait on it before sending request.
 	})
+	require.NoError(t, err)
 	topBalancer.AddService("balancer2", balancer2, Int(1))
-	balancer2.RegisterStatusUpdater(func(up bool) {
+	err = balancer2.RegisterStatusUpdater(func(up bool) {
 		topBalancer.SetStatus("top", "balancer2", up)
 	})
+	require.NoError(t, err)
 
 	recorder := &responseRecorder{ResponseRecorder: httptest.NewRecorder(), save: map[string]int{}}
 	for i := 0; i < 8; i++ {
