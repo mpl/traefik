@@ -867,7 +867,7 @@ account.
 !!! info "All or nothing"
 
     If HealthCheck is enabled for a given service, but any of its descendants does
-not have it enabled, the creation of the service will fail.
+    not have it enabled, the creation of the service will fail.
 
 !!! info "Supported Providers"
     
@@ -955,7 +955,7 @@ into account.
 !!! info "All or nothing"
 
     If HealthCheck is enabled for a given service, but any of its descendants does
-not have it enabled, the creation of the service will fail.
+    not have it enabled, the creation of the service will fail.
 
 !!! info "Supported Providers"
     
