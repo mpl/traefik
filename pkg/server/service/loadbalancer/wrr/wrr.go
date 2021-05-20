@@ -189,12 +189,14 @@ func (b *Balancer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 				if handler.name != cookie.Value {
 					continue
 				}
+
 				b.mutex.RLock()
 				_, ok := b.status[handler.name]
 				b.mutex.RUnlock()
 				if !ok {
-					continue
+					break
 				}
+
 				handler.ServeHTTP(w, req)
 				return
 			}
