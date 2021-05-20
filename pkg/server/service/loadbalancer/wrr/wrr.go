@@ -194,6 +194,8 @@ func (b *Balancer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 				_, ok := b.status[handler.name]
 				b.mutex.RUnlock()
 				if !ok {
+					// because we already are in the only iteration that matches the cookie, so none
+					// of the following iterations are going to be a match for the cookie anyway.
 					break
 				}
 
