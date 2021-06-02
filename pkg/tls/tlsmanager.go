@@ -85,6 +85,12 @@ func (m *Manager) Get(storeName, configName string) (*tls.Config, error) {
 	store := m.getStore(storeName)
 	acmeTLSStore := m.getStore(tlsalpn01.ACMETLS1Protocol)
 	m.lock.Unlock()
+
+	// WIP
+	// Can there be a concurrent call happening here, that makes the acmeTLSStore above invalid?
+	// If it's another Get call, we're good, because it would return the same thing.
+	// If it's an UpdateConfigs call, not good, because it resets m.stores.
+
 	m.lock.RLock()
 	defer m.lock.RUnlock()
 
