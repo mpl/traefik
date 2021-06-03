@@ -75,22 +75,17 @@ func (m *Manager) UpdateConfigs(ctx context.Context, stores map[string]Store, co
 	}
 
 	for storeName, certs := range storesCertificates {
-		m.getStore(storeName).DynamicCerts.Set(certs)
+		st, ok := m.stores[storeName]
+		if !ok {
+			st, _ = buildCertificateStore(context.Background(), Store{}, storeName)
+			m.stores[storeName] = st
+		}
+		st.DynamicCerts.Set(certs)
 	}
 }
 
 // Get gets the TLS configuration to use for a given store / configuration.
 func (m *Manager) Get(storeName, configName string) (*tls.Config, error) {
-	m.lock.Lock()
-	store := m.getStore(storeName)
-	acmeTLSStore := m.getStore(tlsalpn01.ACMETLS1Protocol)
-	m.lock.Unlock()
-
-	// WIP
-	// Can there be a concurrent call happening here, that makes the acmeTLSStore above invalid?
-	// If it's another Get call, we're good, because it would return the same thing.
-	// If it's an UpdateConfigs call, not good, because it resets m.stores.
-
 	m.lock.RLock()
 	defer m.lock.RUnlock()
 
@@ -100,6 +95,17 @@ func (m *Manager) Get(storeName, configName string) (*tls.Config, error) {
 	config, ok := m.configs[configName]
 	if !ok {
 		err = fmt.Errorf("unknown TLS options: %s", configName)
+		tlsConfig = &tls.Config{}
+	}
+
+	store := m.getStore(storeName)
+	if store == nil {
+		err = fmt.Errorf("TLS store %s not found", storeName)
+		tlsConfig = &tls.Config{}
+	}
+	acmeTLSStore := m.getStore(tlsalpn01.ACMETLS1Protocol)
+	if acmeTLSStore == nil {
+		err = fmt.Errorf("ACME TLS store %s not found", tlsalpn01.ACMETLS1Protocol)
 		tlsConfig = &tls.Config{}
 	}
 
@@ -141,11 +147,11 @@ func (m *Manager) Get(storeName, configName string) (*tls.Config, error) {
 // getStore returns the store found for storeName. If not found, a new one is
 // created, populated with a default certificate, and written to m.stores.
 func (m *Manager) getStore(storeName string) *CertificateStore {
-	_, ok := m.stores[storeName]
+	st, ok := m.stores[storeName]
 	if !ok {
-		m.stores[storeName], _ = buildCertificateStore(context.Background(), Store{}, storeName)
+		return nil
 	}
-	return m.stores[storeName]
+	return st
 }
 
 // GetStore gets the certificate store of a given name.
