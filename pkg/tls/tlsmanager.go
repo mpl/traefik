@@ -106,28 +106,25 @@ func (m *Manager) Get(storeName, configName string) (*tls.Config, error) {
 	var tlsConfig *tls.Config
 	var err error
 
+	sniStrict := false
 	config, ok := m.configs[configName]
-	if !ok {
+	if ok {
+		sniStrict = config.SniStrict
+		tlsConfig, err = buildTLSConfig(config)
+	} else {
 		err = fmt.Errorf("unknown TLS options: %s", configName)
+	}
+	if err != nil {
 		tlsConfig = &tls.Config{}
 	}
 
 	store := m.getStore(storeName)
 	if store == nil {
 		err = fmt.Errorf("TLS store %s not found", storeName)
-		tlsConfig = &tls.Config{}
 	}
 	acmeTLSStore := m.getStore(tlsalpn01.ACMETLS1Protocol)
 	if acmeTLSStore == nil {
 		err = fmt.Errorf("ACME TLS store %s not found", tlsalpn01.ACMETLS1Protocol)
-		tlsConfig = &tls.Config{}
-	}
-
-	if err == nil {
-		tlsConfig, err = buildTLSConfig(config)
-		if err != nil {
-			tlsConfig = &tls.Config{}
-		}
 	}
 
 	tlsConfig.GetCertificate = func(clientHello *tls.ClientHelloInfo) (*tls.Certificate, error) {
@@ -147,7 +144,7 @@ func (m *Manager) Get(storeName, configName string) (*tls.Config, error) {
 			return bestCertificate, nil
 		}
 
-		if m.configs[configName].SniStrict {
+		if sniStrict {
 			return nil, fmt.Errorf("strict SNI enabled - No certificate found for domain: %q, closing connection", domainToCheck)
 		}
 
