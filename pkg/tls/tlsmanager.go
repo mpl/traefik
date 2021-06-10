@@ -15,6 +15,11 @@ import (
 	"github.com/traefik/traefik/v2/pkg/types"
 )
 
+const (
+	DefaultTLSConfigName = "default"
+	DefaultTLSStoreName  = "default"
+)
+
 // DefaultTLSOptions the default TLS options.
 var DefaultTLSOptions = Options{}
 
@@ -46,13 +51,11 @@ func (m *Manager) UpdateConfigs(ctx context.Context, stores map[string]Store, co
 	m.storesConfig = stores
 	m.certs = certs
 
-	// TODO(mpl): do it somewhere else? in config generation maybe?
-	// TODO(mpl): use const?
 	if m.storesConfig == nil {
 		m.storesConfig = make(map[string]Store)
 	}
-	if _, ok := m.storesConfig["default"]; !ok {
-		m.storesConfig["default"] = Store{}
+	if _, ok := m.storesConfig[DefaultTLSStoreName]; !ok {
+		m.storesConfig[DefaultTLSStoreName] = Store{}
 	}
 	if _, ok := m.storesConfig[tlsalpn01.ACMETLS1Protocol]; !ok {
 		m.storesConfig[tlsalpn01.ACMETLS1Protocol] = Store{}
@@ -88,7 +91,6 @@ func (m *Manager) UpdateConfigs(ctx context.Context, stores map[string]Store, co
 	for storeName, certs := range storesCertificates {
 		st, ok := m.stores[storeName]
 		if !ok {
-			println("STORE ", storeName, "NOT FOUND, FORCING GENERATION")
 			st, _ = buildCertificateStore(context.Background(), Store{}, storeName)
 			m.stores[storeName] = st
 		}
