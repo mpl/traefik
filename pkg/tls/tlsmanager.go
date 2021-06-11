@@ -16,8 +16,11 @@ import (
 )
 
 const (
+	// DefaultTLSConfigName is the name of the default set of options for configuring TLS.
 	DefaultTLSConfigName = "default"
-	DefaultTLSStoreName  = "default"
+	// DefaultTLSStoreName is the name of the default store of TLS certificates.
+	// Note that it actually is the only usable one for now.
+	DefaultTLSStoreName = "default"
 )
 
 // DefaultTLSOptions the default TLS options.
