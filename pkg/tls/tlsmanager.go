@@ -46,6 +46,7 @@ func NewManager() *Manager {
 }
 
 // UpdateConfigs updates the TLS* configuration options.
+// It initializes the default TLS store, and the TLS store for the ACME challenges.
 func (m *Manager) UpdateConfigs(ctx context.Context, stores map[string]Store, configs map[string]Options, certs []*CertAndStores) {
 	m.lock.Lock()
 	defer m.lock.Unlock()
@@ -57,12 +58,15 @@ func (m *Manager) UpdateConfigs(ctx context.Context, stores map[string]Store, co
 	if m.storesConfig == nil {
 		m.storesConfig = make(map[string]Store)
 	}
+
 	if _, ok := m.storesConfig[DefaultTLSStoreName]; !ok {
 		m.storesConfig[DefaultTLSStoreName] = Store{}
 	}
+
 	if _, ok := m.storesConfig[tlsalpn01.ACMETLS1Protocol]; !ok {
 		m.storesConfig[tlsalpn01.ACMETLS1Protocol] = Store{}
 	}
+
 	m.stores = make(map[string]*CertificateStore)
 	for storeName, storeConfig := range m.storesConfig {
 		ctxStore := log.With(ctx, log.Str(log.TLSStoreName, storeName))
@@ -158,8 +162,7 @@ func (m *Manager) Get(storeName, configName string) (*tls.Config, error) {
 	return tlsConfig, err
 }
 
-// getStore returns the store found for storeName. If not found, a new one is
-// created, populated with a default certificate, and written to m.stores.
+// getStore returns the store found for storeName, or nil otherwise.
 func (m *Manager) getStore(storeName string) *CertificateStore {
 	st, ok := m.stores[storeName]
 	if !ok {
@@ -170,8 +173,8 @@ func (m *Manager) getStore(storeName string) *CertificateStore {
 
 // GetStore gets the certificate store of a given name.
 func (m *Manager) GetStore(storeName string) *CertificateStore {
-	m.lock.Lock()
-	defer m.lock.Unlock()
+	m.lock.RLock()
+	defer m.lock.RUnlock()
 
 	return m.getStore(storeName)
 }
