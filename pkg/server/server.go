@@ -16,7 +16,7 @@ import (
 
 // Server is the reverse-proxy/load-balancer engine.
 type Server struct {
-	watcher        *ConfigurationWatcher
+	watcher        *configurationWatcher
 	tcpEntryPoints TCPEntryPoints
 	udpEntryPoints UDPEntryPoints
 	chainBuilder   *middleware.ChainBuilder
@@ -30,7 +30,7 @@ type Server struct {
 }
 
 // NewServer returns an initialized Server.
-func NewServer(routinesPool *safe.Pool, entryPoints TCPEntryPoints, entryPointsUDP UDPEntryPoints, watcher *ConfigurationWatcher,
+func NewServer(routinesPool *safe.Pool, entryPoints TCPEntryPoints, entryPointsUDP UDPEntryPoints, watcher *configurationWatcher,
 	chainBuilder *middleware.ChainBuilder, accessLoggerMiddleware *accesslog.Handler) *Server {
 	srv := &Server{
 		watcher:                watcher,
@@ -60,7 +60,7 @@ func (s *Server) Start(ctx context.Context) {
 
 	s.tcpEntryPoints.Start()
 	s.udpEntryPoints.Start()
-	s.watcher.Start()
+	s.watcher.start()
 
 	s.routinesPool.GoCtx(s.listenSignals)
 }
