@@ -47,10 +47,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -64,10 +64,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					Services: map[string]*dynamic.UDPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TCP: &dynamic.TCPConfiguration{
 					Routers: map[string]*dynamic.TCPRouter{
@@ -105,10 +105,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					Services: map[string]*dynamic.UDPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TCP: &dynamic.TCPConfiguration{
 					Routers: map[string]*dynamic.TCPRouter{
@@ -158,10 +158,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					Services: map[string]*dynamic.UDPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TCP: &dynamic.TCPConfiguration{
 					Routers: map[string]*dynamic.TCPRouter{
@@ -252,10 +252,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -293,10 +293,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -360,10 +360,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -443,10 +443,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -466,10 +466,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -488,10 +488,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -540,10 +540,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -583,10 +583,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -647,10 +647,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -709,10 +709,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -770,10 +770,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -820,10 +820,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -870,10 +870,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -911,10 +911,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -954,10 +954,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -1005,10 +1005,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					Services: map[string]*dynamic.UDPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -1042,10 +1042,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -1080,10 +1080,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -1108,10 +1108,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -1191,7 +1191,6 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"foo"},
@@ -1236,6 +1235,7 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -1275,10 +1275,10 @@ func TestLoadIngressRouteTCPs(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -1324,10 +1324,10 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -1346,7 +1346,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"foo"},
@@ -1371,6 +1370,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -1389,7 +1389,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test2-route-23c7f4c450289ee29016": {
 							EntryPoints: []string{"web"},
@@ -1426,6 +1425,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -1445,7 +1445,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test2-route-23c7f4c450289ee29016": {
 							EntryPoints: []string{"web"},
@@ -1482,6 +1481,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -1499,7 +1499,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"web"},
@@ -1543,6 +1542,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -1562,7 +1562,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-77c62dfe9517144aeeaa": {
 							EntryPoints: []string{"web"},
@@ -1614,6 +1613,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -1632,7 +1632,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-77c62dfe9517144aeeaa": {
 							EntryPoints: []string{"web"},
@@ -1667,6 +1666,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -1685,9 +1685,8 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
-					Routers:           map[string]*dynamic.Router{},
-					Middlewares:       map[string]*dynamic.Middleware{},
+					Routers:     map[string]*dynamic.Router{},
+					Middlewares: map[string]*dynamic.Middleware{},
 					Services: map[string]*dynamic.Service{
 						"default-wrr1": {
 							Weighted: &dynamic.WeightedRoundRobin{
@@ -1713,6 +1712,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -1731,7 +1731,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-77c62dfe9517144aeeaa": {
 							EntryPoints: []string{"web"},
@@ -1837,6 +1836,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -1855,7 +1855,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-77c62dfe9517144aeeaa": {
 							EntryPoints: []string{"web"},
@@ -1904,6 +1903,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -1922,7 +1922,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-77c62dfe9517144aeeaa": {
 							EntryPoints: []string{"web"},
@@ -1996,6 +1995,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -2014,7 +2014,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-77c62dfe9517144aeeaa": {
 							EntryPoints: []string{"web"},
@@ -2174,6 +2173,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -2192,7 +2192,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-77c62dfe9517144aeeaa": {
 							EntryPoints: []string{"web"},
@@ -2238,6 +2237,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -2256,7 +2256,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-77c62dfe9517144aeeaa": {
 							EntryPoints: []string{"web"},
@@ -2322,6 +2321,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -2340,7 +2340,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-77c62dfe9517144aeeaa": {
 							EntryPoints: []string{"web"},
@@ -2392,6 +2391,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -2411,10 +2411,10 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -2433,10 +2433,10 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -2455,10 +2455,10 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -2486,7 +2486,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"web"},
@@ -2512,6 +2511,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -2549,7 +2549,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"web"},
@@ -2577,6 +2576,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -2597,7 +2597,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"web"},
@@ -2625,6 +2624,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -2662,7 +2662,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"web"},
@@ -2690,6 +2689,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -2726,7 +2726,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"web"},
@@ -2754,6 +2753,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -2789,7 +2789,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"web"},
@@ -2817,6 +2816,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -2841,7 +2841,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"web"},
@@ -2869,6 +2868,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -2893,7 +2893,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"web"},
@@ -2921,6 +2920,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -2939,7 +2939,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"web"},
@@ -2965,6 +2964,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -2983,7 +2983,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"foo"},
@@ -3008,6 +3007,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -3026,7 +3026,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"foo"},
@@ -3051,6 +3050,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -3069,8 +3069,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
-					Routers:           map[string]*dynamic.Router{},
+					Routers: map[string]*dynamic.Router{},
 					Middlewares: map[string]*dynamic.Middleware{
 						"default-basicauth": {
 							BasicAuth: &dynamic.BasicAuth{
@@ -3093,7 +3092,8 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
-					Services: map[string]*dynamic.Service{},
+					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -3112,8 +3112,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
-					Routers:           map[string]*dynamic.Router{},
+					Routers: map[string]*dynamic.Router{},
 					Middlewares: map[string]*dynamic.Middleware{
 						"default-errorpage": {
 							Errors: &dynamic.ErrorPage{
@@ -3138,6 +3137,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -3155,7 +3155,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"foo"},
@@ -3181,6 +3180,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -3209,7 +3209,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"web"},
@@ -3235,6 +3234,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -3255,7 +3255,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"web"},
@@ -3281,6 +3280,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 			},
 		},
@@ -3301,7 +3301,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6f97418635c7e18853da": {
 							EntryPoints: []string{"foo"},
@@ -3322,6 +3321,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -3340,7 +3340,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6f97418635c7e18853da": {
 							EntryPoints: []string{"foo"},
@@ -3361,6 +3360,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -3379,7 +3379,6 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-route-6f97418635c7e18853da": {
 							EntryPoints: []string{"foo"},
@@ -3400,6 +3399,7 @@ func TestLoadIngressRoutes(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -3418,10 +3418,10 @@ func TestLoadIngressRoutes(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -3506,10 +3506,10 @@ func TestLoadIngressRouteUDPs(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -3541,10 +3541,10 @@ func TestLoadIngressRouteUDPs(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TCP: &dynamic.TCPConfiguration{
 					Routers:     map[string]*dynamic.TCPRouter{},
@@ -3602,10 +3602,10 @@ func TestLoadIngressRouteUDPs(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -3668,10 +3668,10 @@ func TestLoadIngressRouteUDPs(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -3750,10 +3750,10 @@ func TestLoadIngressRouteUDPs(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -3787,10 +3787,10 @@ func TestLoadIngressRouteUDPs(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -3824,10 +3824,10 @@ func TestLoadIngressRouteUDPs(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -3851,10 +3851,10 @@ func TestLoadIngressRouteUDPs(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -3874,10 +3874,10 @@ func TestLoadIngressRouteUDPs(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -4247,7 +4247,6 @@ func TestCrossNamespace(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-crossnamespace-route-9313b71dbe6a649d5049": {
 							EntryPoints: []string{"foo"},
@@ -4280,6 +4279,7 @@ func TestCrossNamespace(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -4299,7 +4299,6 @@ func TestCrossNamespace(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-test-crossnamespace-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"foo"},
@@ -4374,6 +4373,7 @@ func TestCrossNamespace(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -4393,7 +4393,6 @@ func TestCrossNamespace(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers: map[string]*dynamic.Router{
 						"default-cross-ns-route-6b204d94623b3df4370c": {
 							EntryPoints: []string{"foo"},
@@ -4499,6 +4498,7 @@ func TestCrossNamespace(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -4517,9 +4517,8 @@ func TestCrossNamespace(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
-					Routers:           map[string]*dynamic.Router{},
-					Middlewares:       map[string]*dynamic.Middleware{},
+					Routers:     map[string]*dynamic.Router{},
+					Middlewares: map[string]*dynamic.Middleware{},
 					Services: map[string]*dynamic.Service{
 						"cross-ns-tr-svc-wrr2": {
 							Weighted: &dynamic.WeightedRoundRobin{
@@ -4569,6 +4568,7 @@ func TestCrossNamespace(t *testing.T) {
 							},
 						},
 					},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -4618,10 +4618,10 @@ func TestCrossNamespace(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -4690,10 +4690,10 @@ func TestCrossNamespace(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -4708,10 +4708,10 @@ func TestCrossNamespace(t *testing.T) {
 					Services: map[string]*dynamic.UDPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TCP: &dynamic.TCPConfiguration{
 					Routers: map[string]*dynamic.TCPRouter{
@@ -4761,10 +4761,10 @@ func TestCrossNamespace(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
@@ -4797,10 +4797,10 @@ func TestCrossNamespace(t *testing.T) {
 					},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TCP: &dynamic.TCPConfiguration{
 					Routers:     map[string]*dynamic.TCPRouter{},
@@ -4830,10 +4830,10 @@ func TestCrossNamespace(t *testing.T) {
 					Services:    map[string]*dynamic.TCPService{},
 				},
 				HTTP: &dynamic.HTTPConfiguration{
-					ServersTransports: map[string]*dynamic.ServersTransport{},
 					Routers:           map[string]*dynamic.Router{},
 					Middlewares:       map[string]*dynamic.Middleware{},
 					Services:          map[string]*dynamic.Service{},
+					ServersTransports: map[string]*dynamic.ServersTransport{},
 				},
 				TLS: &dynamic.TLSConfiguration{},
 			},
